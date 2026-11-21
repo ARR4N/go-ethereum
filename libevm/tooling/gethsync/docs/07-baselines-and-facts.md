@@ -98,6 +98,47 @@ spec tests v2.1.0):
 - No test failed for environmental reasons in the cloud session.
 - A checkpoint therefore costs roughly 8 to 9 minutes of test time here.
 
+## With and without `-short`
+
+Same tree and environment as above, libevm naming, `go test -count=1 -json
+./...` as a single invocation (no flaky/non-flaky split), with and without
+`-short`. The full run used `-timeout 90m`; it did not need it.
+
+| | `-short` | full | Difference |
+|---|---|---|---|
+| Wall time | 376s | 463s | +87s (+23%) |
+| `tests` package | 214s | 343s | +129s |
+| Test cases run (subtests included) | 384,298 | 412,054 | +27,756 |
+| Top-level tests | 1,983 | 1,983 | same set |
+
+Extra test cases that pass in the full run and do not run under `-short`
+(27,935):
+
+| Where | Count | What |
+|---|---|---|
+| `tests`: `TestState`, `TestLegacyState` | 27,862 | Fixture categories marked slow: `stPreCompiledContracts` (13,659), `stTransactionTest` (6,742), `stBadOpcode` (5,138), `stQuadraticComplexityTest` (1,289), `stStaticCall` (630), `stSystemOperationsTest` (350), `stAttackTest` (54) |
+| `tests`: `TestBlockchain/ValidBlocks` | 71 | Slow block fixtures |
+| `metrics` | 1 | `TestUniformSampleConcurrentUpdateCount` |
+| `cmd/devp2p/internal/ethtest` | 1 | `TestEthSuite/LargeTxRequest` |
+
+Still skipped without `-short`: 295 cases, of which 277 are `TestDifficulty`
+fixtures; the rest are individually skipped upstream tests.
+
+Failures in these two single-invocation runs, each re-run alone:
+
+| Run | Package | In CI's `FLAKY_REGEX` | Re-run alone |
+|---|---|---|---|
+| short | `miner` (`TestBuildPayload`) | yes | passed first time |
+| full | `accounts/keystore` (`TestUpdatedKeyfileContents`) | yes | failed once, then passed |
+| full | `eth/catalyst` (`TestEth2NewBlock`) | yes | passed first time |
+| full | `cmd/devp2p/internal/ethtest` (`TestSnapSuite/GetStorageRanges`) | **no** | passed first time |
+
+- The `ethtest` failure is a **flake outside the known list**. The same test
+  passed in the `-short` pass and in both earlier baseline runs, so it is not
+  specific to the full mode. Flagged to the maintainer.
+- Running everything in one invocation produces more flaky failures than CI's
+  split; `run-oracle.sh` keeps the split.
+
 ## CI facts (`.github/workflows/go.yml` on `main`)
 
 - `go test -short`, split into flaky and non-flaky jobs by package.

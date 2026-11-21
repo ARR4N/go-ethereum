@@ -49,6 +49,10 @@ The oracle command is `go test ./...`, with or without `-short` (CI uses
 `-short`). Upstream's and libevm's tests live in the same packages, so one run
 exercises both oracles.
 
+Without `-short` about 28,000 more fixture cases run, nearly all slow state-test
+categories in the `tests` package, for roughly a quarter more time; details in
+[07](07-baselines-and-facts.md#with-and-without--short).
+
 - **A test that did not run proves nothing.** Tests driven by downloaded
   fixtures (the `tests/testdata` submodules and the execution spec tests in
   `tests/spec-tests`) are **skipped, not failed**, when the fixtures are
