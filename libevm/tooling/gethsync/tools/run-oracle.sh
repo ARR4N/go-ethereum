@@ -5,7 +5,8 @@
 # one at a time. Works in either module naming.
 #
 # The flaky-package list is read from the tree's own .github/workflows/go.yml
-# (FLAKY_REGEX), which is the source of truth.
+# (FLAKY_REGEX), which is the source of truth, plus the short `extra_flaky`
+# list below for packages not yet added there.
 #
 # A failing package is re-run on its own, up to RETRIES more times:
 #   - passes on a re-run and is in FLAKY_REGEX  -> "flaky (known)"; carry on
@@ -55,7 +56,11 @@ if [[ -z "${raw}" ]]; then
   echo "FLAKY_REGEX not found in .github/workflows/go.yml" >&2
   exit 2
 fi
-readonly flaky_regex="${module}/${raw#*/*/}"
+# Packages seen to flake that CI's list does not yet include. Each entry is a
+# reminder to add it to FLAKY_REGEX in go.yml, after which it can go from here.
+#   cmd/devp2p/internal/ethtest: TestSnapSuite/GetStorageRanges, 2026-11-21.
+readonly extra_flaky='cmd/devp2p/internal/ethtest'
+readonly flaky_regex="${module}/${raw#*/*/}|${module}/(${extra_flaky})\$"
 
 go list ./... >"${logs}/packages.txt"
 grep -P "${flaky_regex}" "${logs}/packages.txt" >"${logs}/flaky.txt" || true

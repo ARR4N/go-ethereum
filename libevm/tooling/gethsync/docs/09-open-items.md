@@ -52,6 +52,12 @@ beyond the repository and its GitHub artefacts. Before it lands on `main`:
 
 ## Back burner (remind the maintainer when wrapping up)
 
+- **Add `cmd/devp2p/internal/ethtest` to `FLAKY_REGEX` in
+  `.github/workflows/go.yml`.** `TestSnapSuite/GetStorageRanges` flaked on
+  untouched libevm (see [07](07-baselines-and-facts.md)). Until then it is
+  listed in `extra_flaky` in `tools/run-oracle.sh`; remove it from there once
+  CI has it.
+
 - **rlpgen alias testdata:** `rlp/rlpgen/testdata/alias.{in,out}.txt` and the
   `"alias"` entry in `gen_test.go` were sent upstream and can be deleted
   locally once the merged upstream version contains them. Probably outside
