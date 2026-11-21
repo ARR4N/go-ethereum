@@ -106,10 +106,12 @@ tree equality with `git diff --quiet` before use**):
 | v1.15.0 | `756cca7c6` | on master |
 
 - There was no v1.14.1 tag. Grouping/skipping patch versions is allowed.
-- v1.13.14 → v1.14.0 is 209 `master` commits. An intermediate stop at a
-  non-release `master` commit was offered; undecided ([09](09-open-items.md)).
-- **End point:** the latest upstream release tag. Tags beyond v1.16.2 must
-  first be fetched from upstream.
+- v1.13.14 → v1.14.0 is 209 `master` commits. Do it as one merge; add an
+  intermediate stop at a non-release `master` commit only if the changes prove
+  too significant to take together.
+- **End point:** the latest upstream release tag (v1.17.10 as of 2026-11-21).
+  Tags beyond v1.16.2 must first be fetched from upstream.
+- The sync branch is named `gethsync`.
 
 ## One version group
 

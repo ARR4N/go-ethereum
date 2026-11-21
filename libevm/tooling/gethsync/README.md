@@ -48,7 +48,7 @@ sync and to the session that planned it. It is to be cleaned up at the end; see
 |---|---|---|
 | libevm | `fork/libevm` | Copy of `ava-labs/libevm@main` |
 | geth, master | `fork/master` | Upstream `ethereum/go-ethereum@master` |
-| merge, sync | not yet created | The new long-lived merge branch |
+| merge, sync | `fork/gethsync` (not yet created) | The new long-lived merge branch |
 | tooling | `fork/sync-tooling` | This branch: libevm plus `libevm/tooling/gethsync/` |
 
 "A sync" or "a geth sync" means a merge of upstream into libevm.

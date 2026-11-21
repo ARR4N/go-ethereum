@@ -4,15 +4,13 @@
 
 | Item | Notes |
 |---|---|
-| Intermediate stop between v1.13.14 and v1.14.0 | 209 `master` commits in one jump. A stop at a non-release `master` commit was offered; no answer yet |
-| Name of the sync branch on the fork | Referred to as merge/sync |
 | Where the skill finally lives | This branch is its seed; maintainer may also reuse the original conversation |
 
 ## To verify before or during the sync
 
 | Item | Why |
 |---|---|
-| Fetch upstream tags beyond v1.16.2 | End point is the latest upstream tag; twins for #243, #270, #286 are beyond v1.16.2 |
+| Fetch upstream tags beyond v1.16.2 | Readable directly from `ethereum/go-ethereum`; latest is v1.17.10 as of 2026-11-21. Twins for #243, #270, #286 are beyond v1.16.2 |
 | Re-verify the tag → `master` commit table in [05](05-process.md) | Derived from `merge-base`; confirm tree equality per row |
 | Both oracles give the same result in geth and libevm naming | Chained merges are tested in geth naming. Expected to hold; `accounts/abi/bind` and `rlp/rlpgen` are the known path-sensitive packages |
 | Every hook has a test | The safeguard against a silently lost transform |
