@@ -5,7 +5,6 @@
 | Item | Notes |
 |---|---|
 | Intermediate stop between v1.13.14 and v1.14.0 | 209 `master` commits in one jump. A stop at a non-release `master` commit was offered; no answer yet |
-| #156 and #232 (Go version bumps) | Listed in #128 for reverting. With the `go` directive fixed at 1.26 they cannot be reverted wholesale; their vet fixes to upstream files pre-empt upstream. Decide per item |
 | Name of the sync branch on the fork | Referred to as merge/sync |
 | Where the skill finally lives | This branch is its seed; maintainer may also reuse the original conversation |
 
@@ -18,10 +17,8 @@
 | Both oracles give the same result in geth and libevm naming | Chained merges are tested in geth naming. Expected to hold; `accounts/abi/bind` and `rlp/rlpgen` are the known path-sensitive packages |
 | Every hook has a test | The safeguard against a silently lost transform |
 | SSH-signed commits show as verified on GitHub | No SSH-signed commit has ever landed on libevm `main`; all 211 first-parent commits since the base are GPG-signed |
-| Whether the branch rule set permits a true merge commit into `main` | `main` normally takes squashed PRs |
 | Upstream's twin for libevm's rlpgen alias support (#154) | Only candidate seen is geth #31148 ("implement package renaming support"); unconfirmed |
 | Upstream version at which `IntrinsicGas()` changes | For #280 |
-| What libevm's own dependencies require of `go.mod` at old upstream versions | Affects how `go.mod` is merged at each checkpoint |
 
 ## To build (tooling)
 

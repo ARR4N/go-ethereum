@@ -44,13 +44,24 @@ Other tracker items:
 |---|---|---|---|---|---|
 | #110 | `67f879ac1` | Pre-emption; **treat as a cherry-pick** | `2e8e35f2a` (geth #29482) | v1.14.2 (old branch reverted it there) | `Block.WithBody(Body)` signature |
 | #155 | `24d7bdeae` | Pre-emption | `e4675771e` (geth #30253) | v1.14.8 | Remove `memsize` |
-| #156 | `9f410ecc7` | Go version | — | — | `go@1.23`. Handling undecided now the directive is fixed at 1.26 |
-| #232 | `51afedec9` | Go version + vet fixes | — | — | Go 1.24; includes vet fixes to upstream tests. Handling undecided |
+| #156 | `9f410ecc7` | Go version | — | — | `go@1.23`. **Do not revert** (see below) |
+| #232 | `51afedec9` | Go version + vet fixes | — | — | Go 1.24; includes vet fixes to upstream tests. **Do not revert** (see below) |
 | #280 | `9c6496377` | **Foreshadowing: keep, do not revert pre-emptively** | upstream later moves `IntrinsicGas()` towards carrying `params.Rules` | unknown | Expect a conflict at that version; then decide revert vs re-seat and report why. Tracker still lists it for reverting |
 | #286 | `2e3b1cb8d` | Squashed backport | `bc1967f08` (geth #33540) | unresolved | Snapshot generator shutdown race |
 
 "Twin first in" comes from `git describe --contains` with tags up to v1.16.2.
 Re-run after fetching newer tags.
+
+## Go version items are not reverted
+
+#128 lists #156 and #232 for reverting. They are ignored as reverts: the `go`
+directive stays at 1.26 at every checkpoint, because libevm cannot build under
+upstream's older versions (verified: with the directive at 1.22 the build
+fails, as dependencies such as `github.com/arr4n/shed` and `golang.org/x/*`
+require Go >= 1.24). Their incidental fixes to upstream files (e.g. #232's
+`t.Fatalf` / `t.Logf` vet fixes) stay in place; where upstream later makes the
+identical fix the merge resolves by itself, and where upstream's fix differs,
+upstream's wins.
 
 ## Reverts that currently conflict against `main`
 

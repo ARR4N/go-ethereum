@@ -149,6 +149,8 @@ the two exactly. The merge commit therefore builds and passes by itself.
 <a id="go-version"></a>
 
 - `go` directive: **always 1.26** (avalanchego's version), at every checkpoint.
+  Using upstream's incoming version per checkpoint was considered and rejected:
+  libevm's dependencies require Go >= 1.24 (verified by a failed build at 1.22).
 - Consequence: `vet` rejects some older upstream code, e.g. non-constant format
   strings (`fmt.Errorf("… " + s)`), which it only flags when `go.mod` declares
   ≥ 1.24. Fix minimally in the upstream file; list in the commit message. The
@@ -168,5 +170,9 @@ the two exactly. The merge commit therefore builds and passes by itself.
 
 ## Final step
 
-Merge the sync branch into libevm `main` as a true merge commit. Performed by
-the maintainer. Never squash.
+Merge the sync branch into libevm `main` as a true merge commit. Never squash.
+
+`main` does not allow merge commits through the GitHub UI. The maintainer
+instead fast-forwards `main` locally and pushes, which is permitted provided
+there is an associated PR with all requirements met. The `sync-tooling` branch
+is merged into `main` the same way, eventually.
