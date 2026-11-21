@@ -34,6 +34,7 @@ sync and to the session that planned it. It is to be cleaned up at the end; see
 | [docs/07-baselines-and-facts.md](docs/07-baselines-and-facts.md) | Measured baselines and verified facts, with how each was obtained |
 | [docs/08-rules-of-engagement.md](docs/08-rules-of-engagement.md) | When to stop and ask; access, signing and pushing rules |
 | [docs/09-open-items.md](docs/09-open-items.md) | Undecided questions, unverified assumptions, back burner, lessons |
+| [docs/10-catalogue.md](docs/10-catalogue.md) | Every libevm change to an upstream file: where, why, and how to reproduce it |
 
 ## Tools
 

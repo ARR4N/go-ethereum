@@ -22,9 +22,8 @@
 
 - Group 1 pathspec file (single definition for reviewer and tools); to be
   produced together with the catalogue of libevm changes.
-- Transform inventory: every libevm edit to a group 2 file on `main`, by shape
-  and hook, derived from the diff against upstream after reverting
-  cherry-picks. Reconciled after each merge.
+- Transform inventory: done, see [10](10-catalogue.md); awaiting maintainer
+  review. Reconcile it after each merge.
 - Hook-coverage check: for each wrapped or shadowed symbol, list uses in merged
   upstream code that bypass libevm's version.
 - Revert-inverse check: each revert equals the inverse of its cherry-pick,
