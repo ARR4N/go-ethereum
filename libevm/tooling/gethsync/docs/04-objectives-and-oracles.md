@@ -49,6 +49,13 @@ The oracle command is `go test ./...`, with or without `-short` (CI uses
 `-short`). Upstream's and libevm's tests live in the same packages, so one run
 exercises both oracles.
 
+- **A test that did not run proves nothing.** Tests driven by downloaded
+  fixtures (the `tests/testdata` submodules and the execution spec tests in
+  `tests/spec-tests`) are **skipped, not failed**, when the fixtures are
+  absent. Before accepting any result, confirm the fixtures were present and
+  the tests actually ran. `tools/prepare-oracle.sh` fetches them;
+  `tools/run-oracle.sh` refuses to run without them and checks its logs for
+  the skip message. The same care applies to any other test that can skip.
 - libevm tests: all pass.
 - Upstream tests: all pass, unmodified apart from the known baseline
   ([07](07-baselines-and-facts.md#upstream-test-baseline)).

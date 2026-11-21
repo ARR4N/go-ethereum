@@ -18,6 +18,9 @@
 #
 # Prerequisites, as in CI: submodules checked out (tests/testdata) and the
 # execution spec tests extracted into tests/spec-tests. See prepare-oracle.sh.
+# Without them the fixture-driven tests are skipped, not failed, so this script
+# refuses to run and also checks afterwards that none were skipped for that
+# reason.
 
 set -uo pipefail
 
@@ -33,6 +36,16 @@ readonly retries="${RETRIES:-2}"
 read -r -a flags <<<"${GOTEST_FLAGS:--short}"
 
 cd "${tree}"
+
+# Missing fixtures make tests SKIP, not fail, so a run without them proves
+# nothing. Refuse to start; and after the run, check the logs for the skip.
+for d in tests/testdata/BlockchainTests tests/testdata/GeneralStateTests tests/spec-tests/fixtures; do
+  if [[ ! -d "${d}" ]]; then
+    echo "missing test fixtures: ${d} (run prepare-oracle.sh first)" >&2
+    exit 2
+  fi
+done
+
 module="$(go list -m)"
 readonly module
 
@@ -100,6 +113,10 @@ if [[ -s "${logs}/summary.txt" ]]; then
   grep -qE '^(FAIL|FLAKY \(NEW\))' "${logs}/summary.txt" && bad=1
 else
   echo "first-pass failures: none"
+fi
+if grep -lE "can't find test files|missing test files" "${logs}"/*.log >/dev/null 2>&1; then
+  echo "fixture-dependent tests were SKIPPED for want of fixtures; see logs"
+  bad=1
 fi
 [[ "${bad}" -eq 0 ]] && echo "RESULT: green" || echo "RESULT: NOT green"
 exit "${bad}"
