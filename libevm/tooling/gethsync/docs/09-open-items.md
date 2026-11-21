@@ -12,7 +12,6 @@
 |---|---|
 | Fetch upstream tags beyond v1.16.2 | Readable directly from `ethereum/go-ethereum`; latest is v1.17.10 as of 2026-11-21. Twins for #243, #270, #286 are beyond v1.16.2 |
 | Re-verify the tag → `master` commit table in [05](05-process.md) | Derived from `merge-base`; confirm tree equality per row |
-| Both oracles give the same result in geth and libevm naming | Chained merges are tested in geth naming. Expected to hold; `accounts/abi/bind` and `rlp/rlpgen` are the known path-sensitive packages |
 | Every hook has a test | The safeguard against a silently lost transform |
 | SSH-signed commits show as verified on GitHub | No SSH-signed commit has ever landed on libevm `main`; all 211 first-parent commits since the base are GPG-signed |
 | Upstream's twin for libevm's rlpgen alias support (#154) | Only candidate seen is geth #31148 ("implement package renaming support"); unconfirmed |

@@ -42,6 +42,8 @@ sync and to the session that planned it. It is to be cleaned up at the end; see
 |---|---|---|
 | [tools/rename-module.sh](tools/rename-module.sh) | Flip the Go module path between libevm and geth naming | Verified, see docs/07 |
 | [tools/find-cherry-picks.sh](tools/find-cherry-picks.sh) | List true cherry-picks on libevm and their upstream twins | Verified, see docs/07 |
+| [tools/prepare-oracle.sh](tools/prepare-oracle.sh) | Fetch the test fixtures CI uses (submodules, execution spec tests) | Verified, see docs/07 |
+| [tools/run-oracle.sh](tools/run-oracle.sh) | Run both oracles as CI does; classify failures as known-flaky, newly flaky or real | Verified, see docs/07 |
 
 ## Branch names (in the working fork)
 

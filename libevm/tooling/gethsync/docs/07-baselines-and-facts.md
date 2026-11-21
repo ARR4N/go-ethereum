@@ -80,6 +80,24 @@ Checks made: no upstream test deleted or renamed; choice of base
 (`9038ba694` vs `2bd6bd01d`) makes no difference; only one non-`_test`
 test-adjacent file differs (`cmd/evm/internal/t8ntool/block.go`, one line).
 
+## Oracle baseline on untouched libevm
+
+`tools/run-oracle.sh` (`go test -short`, as CI) on `a335c2ecf`, 2026-11-21,
+4 cores, Go 1.26.10, fixtures present (`tests/testdata` submodules, execution
+spec tests v2.1.0):
+
+| Naming | Result | Time | First-pass failures |
+|---|---|---|---|
+| libevm | green | 542s (non-flaky 426s, known-flaky 111s) | `eth/catalyst` (known flaky), passed on first re-run |
+| geth | green | 450s (non-flaky 358s, known-flaky 92s) | none |
+
+- 193 packages: 129 with tests, 64 without. Identical per-package outcome in
+  both namings, so **the oracles can be run in either naming**.
+- The `tests` package took about 200s in each run and no fixture-skip message
+  appeared, i.e. the fixture-driven tests ran.
+- No test failed for environmental reasons in the cloud session.
+- A checkpoint therefore costs roughly 8 to 9 minutes of test time here.
+
 ## CI facts (`.github/workflows/go.yml` on `main`)
 
 - `go test -short`, split into flaky and non-flaky jobs by package.
