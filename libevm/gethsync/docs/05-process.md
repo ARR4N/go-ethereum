@@ -174,5 +174,8 @@ Merge the sync branch into libevm `main` as a true merge commit. Never squash.
 
 `main` does not allow merge commits through the GitHub UI. The maintainer
 instead fast-forwards `main` locally and pushes, which is permitted provided
-there is an associated PR with all requirements met. The `sync-tooling` branch
-is merged into `main` the same way, eventually.
+there is an associated PR with all requirements met.
+
+This applies to the sync branch only. The `sync-tooling` branch will also land
+on `main` eventually, but as an ordinary squashed PR: its history is
+irrelevant.
