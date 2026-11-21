@@ -141,6 +141,20 @@ needs reverting.
   hand resolution; several already do against today's `main`
   ([06](06-cherry-picks.md)).
 
+<a id="diff3"></a>
+
+### diff3 conflict style is mandatory
+
+Every merge, revert and cherry-pick in a sync is run with
+`merge.conflictStyle=diff3` (set it in the repository config before starting:
+`git config merge.conflictStyle diff3`). Each conflict then shows three
+sections, ours, the common ancestor and theirs, not two.
+
+The ancestor is what makes a hook-site conflict resolvable by intent: comparing
+it with "ours" shows exactly which transform libevm applied, and comparing it
+with "theirs" shows what upstream changed underneath. With two-way markers
+those have to be guessed.
+
 ### Merge commit contents
 
 <a id="merge-commit-contents"></a>

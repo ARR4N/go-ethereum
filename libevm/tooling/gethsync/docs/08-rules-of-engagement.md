@@ -42,6 +42,30 @@ Flag without necessarily stopping:
 
 - A **new flaky test**, i.e. one not in a package already in `FLAKY_REGEX`.
 
+## Sharing a conflict that cannot be resolved
+
+When a conflict needs the maintainer, share it by whichever of these fits, in
+this order of preference:
+
+1. **In conversation.** Usually the blocker is a decision, not the text. Give
+   the conflicting hunk with all three sides (base, upstream's, ours), the
+   [catalogue](10-catalogue.md) entry it belongs to, and the options with a
+   recommendation.
+2. **The recipe to reproduce it.** A conflict is fully determined by its two
+   inputs: the tip of `gethsync` and the upstream commit being merged. Checking
+   out the first and merging the second gives the identical conflict locally.
+3. **A branch with the conflict committed as-is**, for anything large. Commit
+   the tree with the conflict markers left in and push it to
+   `gethsync-blocked` on the fork. Never to `gethsync` itself. Reuse that one
+   branch name and overwrite it each time.
+
+The answer comes back either as a resolution stated in conversation, or as a
+branch the maintainer pushes to the fork. Either way it goes into the real
+merge commit, whose message says the resolution was the maintainer's decision.
+
+Conflict markers are always diff3 style; see
+[05](05-process.md#diff3).
+
 ## Report, don't hide
 
 - Any rewind or redo of history: say what changed and why, before replacing
