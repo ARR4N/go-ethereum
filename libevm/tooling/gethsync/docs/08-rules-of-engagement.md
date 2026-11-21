@@ -35,7 +35,7 @@ the sync.
 - **Never push to `ava-labs/libevm`.** Read only.
 - Push only to the fork (`ARR4N/go-ethereum`); blast radius there is accepted.
 - Push after every green checkpoint, so at most one version group can be lost.
-- Keep durable knowledge on the `sync-tooling` branch (`libevm/gethsync/`), not only in conversation.
+- Keep durable knowledge on the `sync-tooling` branch (`libevm/tooling/gethsync/`), not only in conversation.
 
 ## Commits
 

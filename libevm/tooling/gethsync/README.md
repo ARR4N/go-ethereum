@@ -35,6 +35,6 @@ Do not start it without an explicit go-ahead from the maintainer.
 | libevm | `fork/libevm` | Copy of `ava-labs/libevm@main` |
 | geth, master | `fork/master` | Upstream `ethereum/go-ethereum@master` |
 | merge, sync | not yet created | The new long-lived merge branch |
-| tooling | `fork/sync-tooling` | This branch: libevm plus `libevm/gethsync/` |
+| tooling | `fork/sync-tooling` | This branch: libevm plus `libevm/tooling/gethsync/` |
 
 "A sync" or "a geth sync" means a merge of upstream into libevm.
