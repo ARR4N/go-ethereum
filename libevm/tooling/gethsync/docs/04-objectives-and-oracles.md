@@ -14,15 +14,17 @@ Oracles only mean something where the two worlds join: at merge commits.
 |---|---|---|---|
 | A | Group 2 (upstream) | The diff from upstream ("disruption") | The incoming upstream version, i.e. the last upstream commit merged |
 | B | Group 2 (upstream) | Changes to the set of transforms libevm applies | The transforms on current libevm `main` |
-| C | Group 1 minus build/CI | Changes to non-test code; **zero semantic change to tests** | Current libevm `main` |
+| C | Group 1 minus build/CI | Changes to non-test code; **zero semantic change to anything, tests or otherwise** | Current libevm `main` |
 
 - **B is about transforms, not text.** A literal diff-of-diffs is meaningless
   because surrounding code moves. Every hook site after the sync should be the
   same transform (shape, hook, arguments) re-seated. Ideally none added,
   removed or altered.
-- **C on tests:** libevm tests may change only syntactically, to conform to
-  upstream API changes. If one cannot be kept semantically unchanged,
-  **stop and defer to the maintainer; never move on.**
+- **C:** libevm files, tests and non-test code alike, may change only
+  syntactically, to conform to upstream changes. **Any semantic change to
+  anything libevm means stop and defer to the maintainer; never move on.**
+  This is achievable because geth keeps backwards compatibility through
+  `params.ChainConfig` and `params.Rules`.
 
 ## Priority when they conflict
 
@@ -42,6 +44,10 @@ Oracles only mean something where the two worlds join: at merge commits.
 | 5 | **Tracker closed out**: every #128 item and true cherry-pick reverted and replaced by its twin, or still listed with a reason | Agreed |
 
 ## Definition of green
+
+The oracle command is `go test ./...`, with or without `-short` (CI uses
+`-short`). Upstream's and libevm's tests live in the same packages, so one run
+exercises both oracles.
 
 - libevm tests: all pass.
 - Upstream tests: all pass, unmodified apart from the known baseline

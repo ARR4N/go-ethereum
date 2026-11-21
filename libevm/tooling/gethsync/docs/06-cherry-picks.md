@@ -6,6 +6,14 @@ upstream version lands cleanly and libevm's delta contains only what is really
 libevm's. Any file the change added disappears with the revert and returns with
 the merge.
 
+**This is a concern of the first (catch-up) sync only.** Cherry-picks exist
+because libevm fell behind upstream and needed individual fixes early. Once
+libevm merges each geth release immediately there will be none, and this
+document becomes history.
+
+The tables below are a snapshot; issue #128 and `tools/find-cherry-picks.sh`
+are sufficient to regenerate them.
+
 ## Three kinds
 
 | Kind | How it landed on `main` | How to detect |

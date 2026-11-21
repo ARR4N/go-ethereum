@@ -22,7 +22,8 @@
 
 ## To build (tooling)
 
-- Group 1 pathspec file (single definition for reviewer and tools).
+- Group 1 pathspec file (single definition for reviewer and tools); to be
+  produced together with the catalogue of libevm changes.
 - Transform inventory: every libevm edit to a group 2 file on `main`, by shape
   and hook, derived from the diff against upstream after reverting
   cherry-picks. Reconciled after each merge.
@@ -35,6 +36,23 @@
 - Oracle runner: `go test -short` as CI does, with sequential re-run of
   `FLAKY_REGEX` packages and reporting of any new flake.
 - Old-branch comparison at matching versions.
+
+<a id="cleanup"></a>
+
+## Cleanup at the end of the first sync
+
+This directory must end up sufficient for a human or agent with no context
+beyond the repository and its GitHub artefacts. Before it lands on `main`:
+
+- Remove rules that are about the planning session, not the task: the fork and
+  push restrictions, "do not start", the cloud-environment notes, tone.
+- Remove or relocate one-off state once redundant: anchors, the old branch's
+  structure, the 1.13/1.14 history, cherry-pick snapshots, lessons.
+- Remove references a cold reader cannot follow: hashes on branches that may be
+  deleted, the proposal PDF (keep the summarised principles), undefined roles.
+- Replace copied snapshots (flaky list, tracker tables) with how to derive them.
+- Add what the sync itself teaches: the runbook, commit message templates, the
+  group 1 pathspec and the catalogue of libevm changes.
 
 ## Back burner (remind the maintainer when wrapping up)
 

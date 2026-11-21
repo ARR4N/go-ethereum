@@ -7,6 +7,20 @@ This branch is the seed of a future skill for all later syncs.
 Status (2026-11-21): **agreements recorded; the sync itself has not started.**
 Do not start it without an explicit go-ahead from the maintainer.
 
+## How to use this directory
+
+These documents give **context, not an algorithm**. They say what a correct
+sync is, why each rule exists, and what was decided before. Use that context to
+make decisions. The rule for when to decide and when to stop and ask is in
+[docs/08-rules-of-engagement.md](docs/08-rules-of-engagement.md#decide-or-stop);
+read it first.
+
+The commit history of the first sync done this way is the worked example.
+
+This directory currently also holds material specific to the first (catch-up)
+sync and to the session that planned it. It is to be cleaned up at the end; see
+[docs/09-open-items.md](docs/09-open-items.md#cleanup).
+
 ## Read in this order
 
 | File | Contents |

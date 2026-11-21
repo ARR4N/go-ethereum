@@ -34,9 +34,28 @@ The rename is reproducible and exactly invertible (verified, see
 The maintainer permits rewinding/redoing anything to keep history logical.
 Report what changed and why.
 
-## Version sequence
+## Choosing the upstream sequence (general rule)
 
-Upstream's release process changed over time:
+1. **Target:** the latest upstream release tag.
+2. **The upstream side of every merge is a commit on upstream `master`.**
+   - Release tag on `master`: merge the tag.
+   - Release tag off `master`: merge the `master` commit whose tree is
+     identical to the tag's (confirm with `git diff --quiet`), and say so in
+     the merge message.
+   - No such commit: skip that release. Its changes arrive with the next
+     release that is on `master`; confirm that they do.
+3. **One release at a time, oldest first.** Patch releases may be skipped or
+   grouped logically. Every release that is merged must be green.
+4. **No tags of our own.** The tree states its version (upstream's
+   `params/version.go`) and the merge message names the release.
+
+In the steady state libevm merges each geth release as soon as it is out, so
+the sequence is a single merge of the new tag.
+
+## Version sequence for the first sync
+
+How the rule above was arrived at. Upstream's release process changed over
+time:
 
 | Stretch | Relation to upstream `master` |
 |---|---|

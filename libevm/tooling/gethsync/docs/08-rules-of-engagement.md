@@ -8,17 +8,39 @@ the sync.
 - The sync does not start until the maintainer says so, even if everything
   looks ready.
 
-## Stop and ask; never just move on
+<a id="decide-or-stop"></a>
 
-- A libevm test cannot be kept **semantically unchanged**.
-- A transform at a hook site **cannot be named** (its shape or intent is
-  unclear).
-- Upstream now **natively provides** what a hook exists for.
-- A **new flaky test** appears, i.e. one not in a package already in CI's
-  `FLAKY_REGEX`.
-- Anything would require changing an **upstream test** beyond the baseline.
-- #280 reaches the upstream change to `IntrinsicGas()`: decide, then report
-  which way and why.
+## Decide, or stop and ask
+
+**Default: decide.** If these documents cover the situation, through a rule, a
+priority order or a recorded precedent, use that context, proceed, and record
+the decision where a reviewer will find it (the merge commit message).
+
+**MUST stop and ask, always, when either holds:**
+
+1. **It is a brand-new decision**, not covered anywhere in these documents.
+2. **It involves a semantic change to anything libevm**, tests or otherwise.
+
+Never work around either, and never just move on.
+
+Known instances of the two rules (not exhaustive):
+
+- A libevm test cannot be kept semantically unchanged.
+- An adaptation to a libevm non-test file would change what it does, not just
+  how it is spelled.
+- A transform at a hook site cannot be named (its shape or intent is unclear).
+- Upstream now natively provides what a hook exists for.
+- An upstream test would need changing beyond the baseline.
+
+Covered by context, so decide and report:
+
+- #280 reaching upstream's change to `IntrinsicGas()`: choose revert or
+  re-seat, and say which and why.
+- A flaky test in a package already in CI's `FLAKY_REGEX`: re-run and continue.
+
+Flag without necessarily stopping:
+
+- A **new flaky test**, i.e. one not in a package already in `FLAKY_REGEX`.
 
 ## Report, don't hide
 
