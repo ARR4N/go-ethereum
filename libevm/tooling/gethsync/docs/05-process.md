@@ -63,7 +63,10 @@ time:
 | v1.14.0 – v1.14.5 | On `master` |
 | v1.14.6 – v1.14.11 | One version-bump commit off `master`; tree otherwise identical to a `master` commit |
 | v1.14.12 | 101 commits cherry-picked onto the release branch; tree **identical** to `master` commit `c64cf28f9` |
-| v1.15.0 onward (to at least v1.16.2) | On `master` |
+| v1.15.0 – v1.16.2 | On `master` |
+| v1.16.3 – v1.16.7 | One version-bump commit off `master`; tree identical to a `master` commit (v1.16.3 differs in `version/version.go` only) |
+| v1.16.8, v1.16.9 | Hotfix releases on the release branch (txpool, ecies, secp256k1 fixes). **No `master` commit has these trees** |
+| v1.17.0 – v1.17.10 | On `master` |
 
 **Problem at a break point:** merging an off-`master` tag and later a `master`
 descendant shows git the same upstream change twice as unrelated commits.
@@ -79,12 +82,15 @@ in history, and tricks like `-s ours` merges become necessary.
   expose it otherwise.
 - **v1.14.6 – v1.14.12:** merge the `master` commit whose tree matches the tag.
   v1.14.12 is kept as a checkpoint via `c64cf28f9` (last stop before v1.15.0).
-- **v1.15.0 onward:** the tag itself.
+- **v1.15.0 – v1.16.2 and v1.17.0 onward:** the tag itself.
+- **v1.16.3 – v1.16.7:** the matching `master` commit. **Skip v1.16.8 and
+  v1.16.9**, which have none; confirm their fixes are in v1.17.0.
 - **No tags of our own.** The version relation is carried by (i) the tree
   itself, since upstream's `params/version.go` states the version, and (ii) the
   merge commit message, which names the tag and states the trees are identical
   (checkable with one `git diff`).
-- Cost: v1.13.15 and v1.14.6–12 tags are not ancestors of the result.
+- Cost: the v1.13.15, v1.14.6–12 and v1.16.3–9 tags are not ancestors of the
+  result.
 
 Candidate `master` commits (from `git merge-base <tag> master`; **re-verify
 tree equality with `git diff --quiet` before use**):
@@ -104,13 +110,19 @@ tree equality with `git diff --quiet` before use**):
 | v1.14.11 | `f14f13bac` | tree identical |
 | v1.14.12 | `c64cf28f9` | tree identical (verified) |
 | v1.15.0 | `756cca7c6` | on master |
+| v1.16.3 | `ffe758c7a` | differs from tag in `version/version.go` only |
+| v1.16.4 | `b964b6574` | tree identical |
+| v1.16.5 | `32ccb548d` | tree identical |
+| v1.16.6 | `044828e66` | tree identical |
+| v1.16.7 | `07129d21c` | tree identical |
+| v1.16.8, v1.16.9 | none | skip; confirm their fixes are in v1.17.0 |
 
 - There was no v1.14.1 tag. Grouping/skipping patch versions is allowed.
 - v1.13.14 → v1.14.0 is 209 `master` commits. Do it as one merge; add an
   intermediate stop at a non-release `master` commit only if the changes prove
   too significant to take together.
-- **End point:** the latest upstream release tag (v1.17.10 as of 2026-11-21).
-  Tags beyond v1.16.2 must first be fetched from upstream.
+- **End point:** the latest upstream release tag (v1.17.10 as of 2026-11-22).
+  Upstream `master` between v1.13.14 and v1.17.10 is 2,576 commits.
 - The sync branch is named `gethsync`.
 
 ## One version group
