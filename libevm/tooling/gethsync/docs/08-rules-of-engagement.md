@@ -23,6 +23,15 @@ the decision where a reviewer will find it (the merge commit message).
 
 Never work around either, and never just move on.
 
+**Err on the side of caution.** Proceed without asking only when absolutely
+sure a change to a libevm file is purely syntactic. In particular, alert the
+maintainer when:
+
+- **Upstream has rewritten the code under a hook**, so the libevm side must be
+  restructured, even if the observable behaviour and the tests are unchanged.
+- **libevm's exported API is forced to change**, e.g. a hook's signature must
+  follow a changed upstream signature. Consumers break, so this is a stop.
+
 Known instances of the two rules (not exhaustive):
 
 - A libevm test cannot be kept semantically unchanged.

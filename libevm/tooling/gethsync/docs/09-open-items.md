@@ -52,6 +52,13 @@ beyond the repository and its GitHub artefacts. Before it lands on `main`:
 
 ## Back burner (remind the maintainer when wrapping up)
 
+- **`.github/workflows/libevm-delta.yml` finds its base as the bot's "rename Go
+  module" commit on `main`.** After the sync that is no longer libevm's
+  upstream base, so the workflow's diff will be wrong until it is pointed at
+  the last merged upstream commit.
+- **The sync scripts must pass CI's `shellcheck` (scans `./libevm`) and the
+  licence-header check** before `sync-tooling` lands on `main`.
+
 - **Add `cmd/devp2p/internal/ethtest` to `FLAKY_REGEX` in
   `.github/workflows/go.yml`.** `TestSnapSuite/GetStorageRanges` flaked on
   untouched libevm (see [07](07-baselines-and-facts.md)). Until then it is

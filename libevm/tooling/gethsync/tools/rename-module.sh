@@ -31,6 +31,7 @@ esac
 
 go mod edit -module "github.com/${to}"
 
+# shellcheck disable=SC2038 # kept verbatim from the workflow; see header
 find . \
   -iname '*.go' \
   -o -iname '*.txt' \

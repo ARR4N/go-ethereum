@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Run both oracles (upstream's tests and libevm's tests) on a tree, the way CI
-# does: `go test -short`, non-flaky packages concurrently and flaky packages
+# does but without -short: non-flaky packages concurrently and flaky packages
 # one at a time. Works in either module naming.
 #
 # The flaky-package list is read from the tree's own .github/workflows/go.yml
@@ -14,7 +14,8 @@
 #   - never passes                              -> "FAIL"
 #
 # Usage: run-oracle.sh <tree> <log-dir>
-# Env:   RETRIES (default 2), GOTEST_FLAGS (default "-short")
+# Env:   RETRIES (default 2), GOTEST_FLAGS (default "-timeout=30m", i.e. the
+#        full suite; CI itself adds -short)
 # Exit:  0 if nothing is "FAIL" or "FLAKY (NEW)", else 1.
 #
 # Prerequisites, as in CI: submodules checked out (tests/testdata) and the
@@ -34,9 +35,9 @@ mkdir -p "$2"
 logs="$(cd "$2" && pwd)"
 readonly tree logs
 readonly retries="${RETRIES:-2}"
-read -r -a flags <<<"${GOTEST_FLAGS:--short}"
+read -r -a flags <<<"${GOTEST_FLAGS:--timeout=30m}"
 
-cd "${tree}"
+cd "${tree}" || exit 2
 
 # Missing fixtures make tests SKIP, not fail, so a run without them proves
 # nothing. Refuse to start; and after the run, check the logs for the skip.

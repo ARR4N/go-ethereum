@@ -45,9 +45,9 @@ Oracles only mean something where the two worlds join: at merge commits.
 
 ## Definition of green
 
-The oracle command is `go test ./...`, with or without `-short` (CI uses
-`-short`). Upstream's and libevm's tests live in the same packages, so one run
-exercises both oracles.
+The oracle command is `go test ./...`, **without `-short`** at every checkpoint
+(CI itself uses `-short`). Upstream's and libevm's tests live in the same
+packages, so one run exercises both oracles. Use `tools/run-oracle.sh`.
 
 Without `-short` about 28,000 more fixture cases run, nearly all slow state-test
 categories in the `tests` package, for roughly a quarter more time; details in
@@ -61,6 +61,13 @@ categories in the `tests` package, for roughly a quarter more time; details in
   `tools/run-oracle.sh` refuses to run without them and checks its logs for
   the skip message. The same care applies to any other test that can skip.
 - libevm tests: all pass.
+- **Every other CI gate passes too**, at every checkpoint and not only at the
+  end, for the same reason as the oracles: a break can then be pinned to one
+  upstream version. Use `tools/run-ci.sh`. The gates, from
+  `.github/workflows/go.yml` and `lint.yml`: no-cgo build and crypto tests;
+  the `libevm/tooling` module's tests; `go generate` leaves the tree
+  unchanged; `go mod tidy` leaves both modules unchanged; `golangci-lint` at
+  CI's pinned version; `yamllint`; `shellcheck` on `./libevm`.
 - Upstream tests: all pass, unmodified apart from the known baseline
   ([07](07-baselines-and-facts.md#upstream-test-baseline)).
 - Flaky tests:
@@ -73,8 +80,8 @@ categories in the `tests` package, for roughly a quarter more time; details in
 
 ## Green rule
 
-- **Both oracles pass at every upstream version merged**, patch versions
-  included. No compile-only checkpoints.
+- **Both oracles and all CI gates pass at every upstream version merged**,
+  patch versions included. No compile-only checkpoints.
 - Patch versions may be skipped or combined in logical groups (as the old
   branch did, e.g. 1.14.2 → 1.14.5). Whatever is merged must be green before
   moving on.
