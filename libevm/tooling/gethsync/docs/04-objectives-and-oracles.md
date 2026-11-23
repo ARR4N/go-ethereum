@@ -67,7 +67,10 @@ categories in the `tests` package, for roughly a quarter more time; details in
   `.github/workflows/go.yml` and `lint.yml`: no-cgo build and crypto tests;
   the `libevm/tooling` module's tests; `go generate` leaves the tree
   unchanged; `go mod tidy` leaves both modules unchanged; `golangci-lint` at
-  CI's pinned version; `yamllint`; `shellcheck` on `./libevm`.
+  CI's pinned version; `yamllint`; `shellcheck` on `./libevm`. **Run them in
+  libevm naming** (on a scratch copy renamed back, if the checkpoint is in geth
+  naming): the `libevm/tooling` module does not build in geth naming; see
+  [07](07-baselines-and-facts.md#ci-gate-baseline-on-untouched-libevm).
 - Upstream tests: all pass, unmodified apart from the known baseline
   ([07](07-baselines-and-facts.md#upstream-test-baseline)).
 - Flaky tests:

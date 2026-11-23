@@ -52,6 +52,11 @@ beyond the repository and its GitHub artefacts. Before it lands on `main`:
 
 ## Back burner (remind the maintainer when wrapping up)
 
+- **The rename leaves `libevm/tooling` unbuildable in geth naming.** Its `.go`
+  files are renamed but its `go.mod` is not. Either make the `find` exclusion
+  in `rename-module.yml` effective or rename the tooling `go.mod` too. Left
+  alone for now so renames stay byte-identical to existing ones.
+
 - **`.github/workflows/libevm-delta.yml` finds its base as the bot's "rename Go
   module" commit on `main`.** After the sync that is no longer libevm's
   upstream base, so the workflow's diff will be wrong until it is pointed at

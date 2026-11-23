@@ -98,6 +98,35 @@ spec tests v2.1.0):
 - No test failed for environmental reasons in the cloud session.
 - A checkpoint therefore costs roughly 8 to 9 minutes of test time here.
 
+## CI gate baseline on untouched libevm
+
+`tools/run-ci.sh` on `a335c2ecf`, 2026-11-23, with `golangci-lint` v1.64.8
+built with Go 1.26.10, `yamllint` 1.38.0, `shellcheck` 0.10.0:
+
+| Gate | libevm naming | geth naming |
+|---|---|---|
+| nocgo | pass (39s) | pass |
+| tooling | pass (5s) | **fail** |
+| generate | pass (37s) | pass |
+| tidy | pass (7s) | **fail** (tooling module) |
+| golangci | pass (51s) | pass |
+| yamllint | pass | pass |
+| shell | pass | pass |
+
+All gates pass in libevm naming, in about two and a half minutes.
+
+**The two failures in geth naming are caused by the rename, not by the code.**
+The rename rewrites import paths in `libevm/tooling/**/*.go` but not
+`libevm/tooling/go.mod`, which still requires and replaces
+`github.com/ava-labs/libevm`. The tooling module therefore cannot build in geth
+naming. This is the `find` quirk described under [Rename](#rename): the
+exclusion of `libevm/tooling` was evidently intended but does not take effect
+for `.go` files.
+
+Consequence: **run the CI gates in libevm naming.** At a checkpoint that is in
+geth naming, rename a scratch copy back and run them there. The oracles can
+still be run in either naming.
+
 ## With and without `-short`
 
 Same tree and environment as above, libevm naming, `go test -count=1 -json
