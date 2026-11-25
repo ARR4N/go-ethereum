@@ -17,10 +17,10 @@
 package state
 
 import (
-	"github.com/ava-labs/libevm/ethdb"
-	"github.com/ava-labs/libevm/libevm"
-	"github.com/ava-labs/libevm/libevm/register"
-	"github.com/ava-labs/libevm/triedb"
+	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/libevm"
+	"github.com/ethereum/go-ethereum/libevm/register"
+	"github.com/ethereum/go-ethereum/triedb"
 )
 
 // A DatabaseInterceptor accepts the standard [Database] implementation

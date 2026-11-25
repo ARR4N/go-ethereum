@@ -17,7 +17,7 @@
 package filters
 
 import (
-	"github.com/ava-labs/libevm/core/types"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 // BloomOverrider is an optional extension to [Backend], allowing arbitrary

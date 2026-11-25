@@ -19,8 +19,8 @@ package tracers
 import (
 	"context"
 
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/core/types"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 // BlockHashOverrider is an optional extension to [Backend], allowing an

@@ -19,7 +19,7 @@ package abi
 import (
 	"fmt"
 
-	"github.com/ava-labs/libevm/common"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 // PackEvent packs the given `args` to conform with the ABI for the specified

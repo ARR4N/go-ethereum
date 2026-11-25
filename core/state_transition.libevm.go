@@ -22,11 +22,11 @@ import (
 
 	"github.com/holiman/uint256"
 
-	"github.com/ava-labs/libevm/core/types"
-	"github.com/ava-labs/libevm/core/vm"
-	"github.com/ava-labs/libevm/libevm"
-	"github.com/ava-labs/libevm/libevm/options"
-	"github.com/ava-labs/libevm/params"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/core/vm"
+	"github.com/ethereum/go-ethereum/libevm"
+	"github.com/ethereum/go-ethereum/libevm/options"
+	"github.com/ethereum/go-ethereum/params"
 )
 
 func (st *StateTransition) rulesHooks() params.RulesHooks {

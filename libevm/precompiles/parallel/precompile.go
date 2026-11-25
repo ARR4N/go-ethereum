@@ -16,7 +16,7 @@
 
 package parallel
 
-import "github.com/ava-labs/libevm/core/vm"
+import "github.com/ethereum/go-ethereum/core/vm"
 
 // PrecompileResult is the interface required for a [Handler] to be converted
 // into a [vm.PrecompiledStatefulContract].

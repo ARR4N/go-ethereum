@@ -19,8 +19,8 @@ package snapshot
 import (
 	"errors"
 
-	"github.com/ava-labs/libevm/ethdb"
-	"github.com/ava-labs/libevm/libevm/options"
+	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/libevm/options"
 )
 
 // generatorPausing is embedded in [generatorContext] to add libevm-specific

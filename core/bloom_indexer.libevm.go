@@ -17,8 +17,8 @@
 package core
 
 import (
-	"github.com/ava-labs/libevm/core/types"
-	"github.com/ava-labs/libevm/ethdb"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethdb"
 )
 
 // BloomThrottling is the time to wait between processing two consecutive index sections.

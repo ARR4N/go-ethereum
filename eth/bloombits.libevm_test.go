@@ -21,7 +21,7 @@ import (
 
 	"go.uber.org/goleak"
 
-	"github.com/ava-labs/libevm/core/rawdb"
+	"github.com/ethereum/go-ethereum/core/rawdb"
 )
 
 func TestStartBloomHandlersNoLeaks(t *testing.T) {

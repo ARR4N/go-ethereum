@@ -17,7 +17,7 @@
 // Package debug exposes the internal debug package.
 package debug
 
-import "github.com/ava-labs/libevm/internal/debug"
+import "github.com/ethereum/go-ethereum/internal/debug"
 
 // Handler is the debug API handler for tracking process level statistics.
 var Handler = debug.Handler

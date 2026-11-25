@@ -16,7 +16,7 @@
 
 package vm
 
-import "github.com/ava-labs/libevm/common"
+import "github.com/ethereum/go-ethereum/common"
 
 // StateDBRemainder defines methods not included in the geth definition of
 // [StateDB] but present on the concrete type and exposed for libevm

@@ -19,10 +19,10 @@ package core
 import (
 	"encoding/binary"
 
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/core/state"
-	"github.com/ava-labs/libevm/core/types"
-	"github.com/ava-labs/libevm/params"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/state"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/params"
 )
 
 var beaconRootsCodeHash = common.HexToHash(`0xf57acd40259872606d76197ef052f3d35588dadf919ee1f0e3cb9b62d3f4b02c`)

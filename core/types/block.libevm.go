@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/ava-labs/libevm/internal/libevm/pseudo"
-	"github.com/ava-labs/libevm/rlp"
+	"github.com/ethereum/go-ethereum/internal/libevm/pseudo"
+	"github.com/ethereum/go-ethereum/rlp"
 )
 
 // HeaderHooks are required for all types registered with [RegisterExtras] for

@@ -17,8 +17,8 @@
 package eth
 
 import (
-	"github.com/ava-labs/libevm/core/bloombits"
-	"github.com/ava-labs/libevm/ethdb"
+	"github.com/ethereum/go-ethereum/core/bloombits"
+	"github.com/ethereum/go-ethereum/ethdb"
 )
 
 const (
