@@ -715,6 +715,12 @@ Receipt changes are under [core-8](#core-8).
 - **Steps:** wrap the bloom argument at every `bloomFilter` call site.
 - **At a merge:** check for new `bloomFilter` calls or other reads of
   `header.Bloom` in this package.
+- **Since geth v1.14.0 there is one site, `blockLogs`.** Upstream removed the
+  other two functions:
+  - `pendingLogs` (geth #29574, pending-log support removed). The libevm
+    subtest `TestBloomOverride/pendingLogs` was deleted with it. Maintainer's
+    rationale: pending logs do not make sense in SAE, so nothing is lost.
+  - `lightFilterLogs` (light-client mode removed).
 
 ---
 
