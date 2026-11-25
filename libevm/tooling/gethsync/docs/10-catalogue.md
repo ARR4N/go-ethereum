@@ -68,6 +68,10 @@ Names used under "Steps".
 - **Steps:** build and `go vet ./...`; for each "non-constant format string"
   report, switch to the non-formatting variant or add the missing verb
   argument. Regenerate `stringer` files with `go generate`.
+- **Added at geth v1.14.0:** `beacon/types/beacon_block.go` and
+  `beacon/types/exec_header.go`, `fmt.Errorf("unsupported fork: " + forkName)`
+  → `fmt.Errorf("unsupported fork: %s", forkName)`, matching upstream's own
+  later fix.
 - **At a merge:** upstream makes the same fixes when it raises its own Go
   version. Identical fixes merge cleanly; where they differ, take upstream's.
   New upstream code may need new fixes of the same kind; list them in the merge
@@ -131,6 +135,10 @@ Names used under "Steps".
   config at the head block. These differ only for a config that is
   pre-Homestead at head.
 - **Violates measure 2** (changes an upstream signature). Known and accepted.
+- **Added at geth v1.14.0:** two calls in the upstream test
+  `core/state_processor_test.go`,
+  `IntrinsicGas(code, nil, true, true, true, true)` →
+  `IntrinsicGas(code, nil, true, params.Rules{IsHomestead: true, IsIstanbul: true, IsShanghai: true})`.
 
 <a id="core-3"></a>
 
@@ -239,6 +247,38 @@ Names used under "Steps".
 - **Rationale:** the file was stale relative to its generator; libevm's CI
   checks that generated code is up to date.
 - **Steps:** regenerate. Never hand-edit.
+- **Gone at geth v1.14.0:** upstream's file now matches the generator's output.
+
+---
+
+## `core/tracing`
+
+<a id="tracing-1"></a>
+
+### tracing-1: `tracing.StateDB.GetState` accepts options (added at geth v1.14.0)
+
+- **Where:** `core/tracing/hooks.go`, the `StateDB` interface (new upstream
+  file in v1.14.0).
+- **Change:** `GetState(common.Address, common.Hash)` gains
+  `...stateconf.StateDBStateOption`; import `libevm/stateconf` under a
+  `// libevm extra imports` comment.
+- **Rationale:** upstream passes its state database to tracers as this
+  interface (`EVM.GetVMContext`). `vm.StateDB` and `*state.StateDB` would
+  satisfy it but for libevm's variadic `GetState` ([state-4](#state-4),
+  [vm-9](#vm-9)). This is the inverse of adding an ignored variadic option to a
+  concrete type such as `snapshot.Tree` ([snapshot-1](#snapshot-1)): here the
+  upstream interface is widened so the libevm-widened types still fit.
+  Confirmed by the maintainer.
+- **Alternative rejected:** an adapter wherever upstream passes the database
+  to a tracer. That grows with upstream; this is one fixed edit.
+- **Steps:** variadic option on the one interface method.
+- **At a merge:** any upstream interface that `vm.StateDB` or
+  `*state.StateDB` must satisfy and that declares one of the three widened
+  methods needs the same treatment.
+
+libevm's own gas and balance adjustments are reported to these hooks with the
+reasons listed in [11](11-sync-log.md#tracer-reasons); two libevm-specific
+reason constants are in `core/tracing/hooks.libevm.go`.
 
 ---
 
@@ -742,6 +782,26 @@ Receipt changes are under [core-8](#core-8).
   returns the original hash.
 - **Steps:** replace **every** `Hash()` call on a `*types.Block` in this file.
 - **At a merge:** grep the merged file for remaining `.Hash()` calls on blocks.
+
+<a id="tracers-2"></a>
+
+### tracers-2: prestate tracer's scope-entry hook (PR #64; re-seated at geth v1.14.0)
+
+- **Where:** `eth/tracers/native/prestate.go`, the `tracing.Hooks` literal in
+  the tracer's constructor.
+- **Change:** one entry, `OnEnter: t.OnEnter, // libevm: see prestate_libevm.go`.
+- **Rationale (PR):** the prestate tracer assumes an account has been looked up
+  before its storage is read, and maintains that only when it sees a
+  scope-entering opcode. A stateful precompile calling another contract enters
+  a scope with no such opcode, which panicked on a nil map. libevm's `OnEnter`
+  (in `prestate_libevm.go`) restores the invariant.
+- **History:** before v1.14.0 upstream's tracers were an interface, so libevm
+  only had to define the method (`CaptureEnter`); no upstream file changed.
+  v1.14.0 replaced the interface with a struct of hook functions, so the method
+  must now be registered. Without the line the fix compiles and is silently
+  dead; `TestPrecompileCallWithPrestateTracer` is what catches it.
+- **Steps:** one entry in the struct literal. A compile-time assertion in the
+  libevm file checks the method still matches `tracing.EnterHook`.
 
 Test double: `eth/tracers/logger/logger_test.go` implements the widened
 interface of [state-4](#state-4); see the upstream test baseline in

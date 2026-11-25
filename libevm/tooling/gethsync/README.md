@@ -35,6 +35,7 @@ sync and to the session that planned it. It is to be cleaned up at the end; see
 | [docs/08-rules-of-engagement.md](docs/08-rules-of-engagement.md) | When to stop and ask; access, signing and pushing rules |
 | [docs/09-open-items.md](docs/09-open-items.md) | Undecided questions, unverified assumptions, back burner, lessons |
 | [docs/10-catalogue.md](docs/10-catalogue.md) | Every libevm change to an upstream file: where, why, and how to reproduce it |
+| [docs/11-sync-log.md](docs/11-sync-log.md) | What happened in each version group of the first sync: decisions, exceptions, findings |
 
 ## Tools
 

@@ -51,6 +51,24 @@ Flag without necessarily stopping:
 
 - A **new flaky test**, i.e. one not in a package already in `FLAKY_REGEX`.
 
+## Novel work must be identifiable
+
+A sync adapts existing code; it should rarely add behaviour. When it does, on
+the maintainer's instruction, the new work must be obviously the performer's
+own and not an adaptation of existing libevm code:
+
+- tests written for it go in `*.libevm_claude_test.go` files (or the
+  equivalent for another performer), never in existing test files;
+- it is a separate commit after the merge commit, whose message says it is
+  novel work and who chose the behaviour.
+
+## Exceptions are never precedent
+
+When the maintainer allows a departure from these rules, record it in
+[11](11-sync-log.md) with the reasons given. **It applies to that case only.**
+Do not map its circumstances onto a later situation, however similar: always
+ask again.
+
 ## Sharing a conflict that cannot be resolved
 
 When a conflict needs the maintainer, share it by whichever of these fits, in
