@@ -28,8 +28,11 @@ The rename is reproducible and exactly invertible (verified, see
   lets every cherry-pick be reverted before its twin (e.g. #323, picked onto
   `main` after the old branch had already passed its twin's version).
 - Running the whole process end to end is what produces the skill.
-- The old branch remains a cross-check: at each matching version compare trees;
-  any difference is an error in one of them. It need not be fully verified.
+- The old branch is a **post hoc oracle only**: once a version group is green,
+  compare trees at the matching version; any difference is an error in one of
+  them. **Never consult it while resolving a merge.** Future syncs will have no
+  such reference, so the method must not depend on one. It need not be fully
+  verified.
 
 The maintainer permits rewinding/redoing anything to keep history logical.
 Report what changed and why.

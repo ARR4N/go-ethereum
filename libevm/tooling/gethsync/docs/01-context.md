@@ -37,8 +37,8 @@ per network per account), hence reusing this one.
 `origin/arr4n/geth-merge-long-lived`: the maintainer's earlier, unfinished sync.
 It reached geth v1.14.12 and stopped for unrelated priorities. It is **not**
 continued; the sync is redone from the current libevm tip (reasons in
-[05](05-process.md#why-redo)). It is kept as a second opinion: at each matching
-version, compare the new tree with it.
+[05](05-process.md#why-redo)). It is kept as a post hoc oracle only: after a version group is
+green, compare the new tree with it; never consult it while resolving.
 
 Related older branches: `origin/arr4n/merge-resolve-helpers` (earlier approach:
 bulk-accept "theirs" on rename-only conflicts), and
