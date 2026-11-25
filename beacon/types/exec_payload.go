@@ -64,7 +64,7 @@ func convertPayload[T payloadType](payload T, parentRoot *zrntcommon.Root) (*typ
 	}
 
 	block := types.NewBlockWithHeader(&header)
-	block = block.WithBody(types.Body{Transactions: transactions})
+	block = block.WithBody(transactions, nil)
 	block = block.WithWithdrawals(withdrawals)
 	if hash := block.Hash(); hash != expectedHash {
 		return nil, fmt.Errorf("Sanity check failed, payload hash does not match (expected %x, got %x)", expectedHash, hash)
