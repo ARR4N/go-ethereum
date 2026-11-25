@@ -29,6 +29,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
+	"github.com/ethereum/go-ethereum/core/tracing"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -148,7 +149,7 @@ func TestChargePreprocessingGas(t *testing.T) {
 			t.Run("ApplyTransaction", func(t *testing.T) {
 				_, _, sdb := ethtest.NewEmptyStateDB(t)
 				sdb.SetTxContext(tx.Hash(), i)
-				sdb.SetBalance(eoa, new(uint256.Int).SetAllOne())
+				sdb.SetBalance(eoa, new(uint256.Int).SetAllOne(), tracing.BalanceChangeUnspecified)
 				sdb.SetNonce(eoa, tx.Nonce())
 
 				var gotGasUsed uint64
@@ -173,7 +174,7 @@ func TestChargePreprocessingGas(t *testing.T) {
 			t.Run("VM_error", func(t *testing.T) {
 				sdb, evm := ethtest.NewZeroEVM(t, ethtest.WithChainConfig(config))
 				sdb.SetTxContext(tx.Hash(), i)
-				sdb.SetBalance(eoa, new(uint256.Int).SetAllOne())
+				sdb.SetBalance(eoa, new(uint256.Int).SetAllOne(), tracing.BalanceChangeUnspecified)
 				sdb.SetNonce(eoa, tx.Nonce())
 
 				msg, err := core.TransactionToMessage(tx, signer, header.BaseFee)

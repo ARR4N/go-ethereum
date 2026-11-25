@@ -84,14 +84,14 @@ func TestSetBeaconBlockRoot(t *testing.T) {
 					uint256.NewInt(0),
 				)
 				require.NoErrorf(t, err, "%T.Create([EIP-4788 contract])", evm)
-				require.Equalf(t, params.BeaconRootsStorageAddress, addr, "%T.Create([EIP-4788 contract]) deployed address", evm)
+				require.Equalf(t, params.BeaconRootsAddress, addr, "%T.Create([EIP-4788 contract]) deployed address", evm)
 
 				tt.setup(evm, sdb)
 				gotStateRoots[i] = sdb.IntermediateRoot(true)
 
 				got, _, err := evm.StaticCall(
 					vm.AccountRef{},
-					params.BeaconRootsStorageAddress,
+					params.BeaconRootsAddress,
 					uint256.NewInt(time).PaddedBytes(32),
 					1e6,
 				)

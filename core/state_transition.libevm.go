@@ -22,6 +22,7 @@ import (
 
 	"github.com/holiman/uint256"
 
+	"github.com/ethereum/go-ethereum/core/tracing"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/libevm"
@@ -144,7 +145,7 @@ func (st *StateTransition) maybeCreditBaseFeeToCoinbase() {
 	}
 	fee := uint256.NewInt(st.gasUsed())
 	fee.Mul(fee, baseFee)
-	st.state.AddBalance(st.evm.Context.Coinbase, fee)
+	st.state.AddBalance(st.evm.Context.Coinbase, fee, tracing.BalanceChangeUnspecified)
 }
 
 // libevmAccessListGas is a convenience wrapper for calling the

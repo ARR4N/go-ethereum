@@ -20,12 +20,8 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
-	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/rpc"
 )
 
 type bloomOverriderBackend struct {
@@ -49,25 +45,6 @@ func TestBloomOverride(t *testing.T) {
 	}
 	sys.backend = sut
 
-	t.Run("lightFilterLogs", func(t *testing.T) {
-		api := NewFilterAPI(sys, true /*lightMode*/)
-		defer CloseAPI(api)
-
-		id, err := api.NewFilter(FilterCriteria{})
-		require.NoErrorf(t, err, "%T.NewFilter()", api)
-		defer api.UninstallFilter(id)
-
-		// If there is no historical header then the filter system returns early.
-		for i := range int64(2) {
-			sut.chainFeed.Send(core.ChainEvent{
-				Block: types.NewBlockWithHeader(&types.Header{
-					Number: big.NewInt(i),
-				}),
-			})
-		}
-		<-sut.overridden
-	})
-
 	t.Run("blockLogs", func(t *testing.T) {
 		hdr := &types.Header{Number: big.NewInt(0)}
 		h := hdr.Hash()
@@ -76,16 +53,6 @@ func TestBloomOverride(t *testing.T) {
 		rawdb.WriteHeaderNumber(db, h, 0)
 
 		go sys.NewBlockFilter(h, nil, nil).Logs(t.Context()) //nolint:errcheck // Known but irrelevant error
-		<-sut.overridden
-	})
-
-	t.Run("pendingLogs", func(t *testing.T) {
-		hdr := &types.Header{Number: big.NewInt(1)}
-		sut.pendingBlock = types.NewBlockWithHeader(hdr)
-		sut.pendingReceipts = types.Receipts{}
-
-		n := rpc.PendingBlockNumber.Int64()
-		go sys.NewRangeFilter(n, n, nil, nil).Logs(t.Context()) //nolint:errcheck // Known but irrelevant error
 		<-sut.overridden
 	})
 }

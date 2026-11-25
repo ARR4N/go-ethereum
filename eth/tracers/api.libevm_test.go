@@ -30,6 +30,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/state"
+	"github.com/ethereum/go-ethereum/core/tracing"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/params"
@@ -59,26 +60,17 @@ type blockHashCaptureTracer struct {
 	blockHash common.Hash
 }
 
-func newBlockHashCaptureTracer(ctx *Context, _ json.RawMessage) (Tracer, error) {
-	return &blockHashCaptureTracer{blockHash: ctx.BlockHash}, nil
+func newBlockHashCaptureTracer(ctx *Context, _ json.RawMessage) (*Tracer, error) {
+	t := &blockHashCaptureTracer{blockHash: ctx.BlockHash}
+	return &Tracer{
+		Hooks:     &tracing.Hooks{},
+		GetResult: t.GetResult,
+		Stop:      func(error) {},
+	}, nil
 }
 
 func (t *blockHashCaptureTracer) GetResult() (json.RawMessage, error) {
 	return json.Marshal(t.blockHash)
-}
-
-func (*blockHashCaptureTracer) Stop(error)            {}
-func (*blockHashCaptureTracer) CaptureTxStart(uint64) {}
-func (*blockHashCaptureTracer) CaptureTxEnd(uint64)   {}
-func (*blockHashCaptureTracer) CaptureStart(*vm.EVM, common.Address, common.Address, bool, []byte, uint64, *big.Int) {
-}
-func (*blockHashCaptureTracer) CaptureEnd([]byte, uint64, error) {}
-func (*blockHashCaptureTracer) CaptureEnter(vm.OpCode, common.Address, common.Address, []byte, uint64, *big.Int) {
-}
-func (*blockHashCaptureTracer) CaptureExit([]byte, uint64, error) {}
-func (*blockHashCaptureTracer) CaptureState(uint64, vm.OpCode, uint64, uint64, *vm.ScopeContext, []byte, int, error) {
-}
-func (*blockHashCaptureTracer) CaptureFault(uint64, vm.OpCode, uint64, uint64, *vm.ScopeContext, int, error) {
 }
 
 // alteredBackend models a chain that uses a different design for their blocks,
@@ -118,7 +110,7 @@ func (b *alteredBackend) StateAtBlock(ctx context.Context, block *types.Block, r
 	return b.testBackend.StateAtBlock(ctx, b.unalteredBlock(block.NumberU64()), reexec, base, readOnly, preferDisk)
 }
 
-func (b *alteredBackend) StateAtTransaction(ctx context.Context, block *types.Block, txIndex int, reexec uint64) (*core.Message, vm.BlockContext, *state.StateDB, StateReleaseFunc, error) {
+func (b *alteredBackend) StateAtTransaction(ctx context.Context, block *types.Block, txIndex int, reexec uint64) (*types.Transaction, vm.BlockContext, *state.StateDB, StateReleaseFunc, error) {
 	return b.testBackend.StateAtTransaction(ctx, b.unalteredBlock(block.NumberU64()), txIndex, reexec)
 }
 

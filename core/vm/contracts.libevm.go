@@ -18,10 +18,10 @@ package vm
 
 import (
 	"fmt"
+	"log/slog"
 	"math/big"
 
 	"github.com/holiman/uint256"
-	"golang.org/x/exp/slog"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"

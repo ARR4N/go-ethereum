@@ -18,11 +18,10 @@ package ethtest
 
 import (
 	"context"
+	"log/slog"
 	"runtime"
 	"slices"
 	"testing"
-
-	"golang.org/x/exp/slog"
 
 	"github.com/ethereum/go-ethereum/log"
 )

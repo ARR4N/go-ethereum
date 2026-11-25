@@ -18,10 +18,10 @@ package log
 
 import (
 	"bytes"
+	"log/slog"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"golang.org/x/exp/slog"
 )
 
 func TestTypeOf(t *testing.T) {

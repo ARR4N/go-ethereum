@@ -32,15 +32,15 @@ var beaconRootsCodeHash = common.HexToHash(`0xf57acd40259872606d76197ef052f3d355
 // function. If [types.Header.ParentBeaconRoot] is nil or the EIP-4788 contract
 // hasn't been deployed, then this function is a no-op.
 func SetBeaconBlockRoot(sdb *state.StateDB, hdr *types.Header) {
-	if hdr.ParentBeaconRoot == nil || sdb.GetCodeHash(params.BeaconRootsStorageAddress) != beaconRootsCodeHash {
+	if hdr.ParentBeaconRoot == nil || sdb.GetCodeHash(params.BeaconRootsAddress) != beaconRootsCodeHash {
 		return
 	}
 	const bufferLen = 8191
 	timeIdx := hdr.Time % bufferLen
 	rootIdx := timeIdx + bufferLen
 
-	sdb.SetState(params.BeaconRootsStorageAddress, uint64ToHash(timeIdx), uint64ToHash(hdr.Time))
-	sdb.SetState(params.BeaconRootsStorageAddress, uint64ToHash(rootIdx), *hdr.ParentBeaconRoot)
+	sdb.SetState(params.BeaconRootsAddress, uint64ToHash(timeIdx), uint64ToHash(hdr.Time))
+	sdb.SetState(params.BeaconRootsAddress, uint64ToHash(rootIdx), *hdr.ParentBeaconRoot)
 	sdb.Finalise(true)
 }
 

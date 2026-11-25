@@ -30,6 +30,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus"
 	"github.com/ethereum/go-ethereum/core"
+	"github.com/ethereum/go-ethereum/core/tracing"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -235,7 +236,7 @@ func TestMinimumGasConsumption(t *testing.T) {
 			const startingBalance = 10 * params.Ether
 			from := crypto.PubkeyToAddress(key.PublicKey)
 			stateDB.SetNonce(from, 0)
-			stateDB.SetBalance(from, uint256.NewInt(startingBalance))
+			stateDB.SetBalance(from, uint256.NewInt(startingBalance), tracing.BalanceChangeUnspecified)
 			stateDB.AddRefund(tt.refund)
 
 			var (
@@ -307,7 +308,7 @@ func TestGasEstimationIgnoresMinConsumption(t *testing.T) {
 	hooks.Register(t)
 
 	_, _, sdb := ethtest.NewEmptyStateDB(t)
-	sdb.SetBalance(from, new(uint256.Int).SetAllOne())
+	sdb.SetBalance(from, new(uint256.Int).SetAllOne(), tracing.BalanceChangeUnspecified)
 
 	opts := &gasestimator.Options{
 		Config: params.MergedTestChainConfig,
@@ -409,7 +410,7 @@ func TestCreditBaseFeeToCoinbase(t *testing.T) {
 			}
 
 			sdb, evm := ethtest.NewZeroEVM(t, ethtest.WithChainConfig(&config))
-			sdb.SetBalance(crypto.PubkeyToAddress(key.PublicKey), new(uint256.Int).SetAllOne())
+			sdb.SetBalance(crypto.PubkeyToAddress(key.PublicKey), new(uint256.Int).SetAllOne(), tracing.BalanceChangeUnspecified)
 
 			tx := types.MustSignNewTx(key, types.LatestSigner(&config), tt.tx)
 
@@ -430,7 +431,7 @@ func TestCreditBaseFeeToCoinbase(t *testing.T) {
 					Number:     big.NewInt(0),
 					Difficulty: big.NewInt(0),
 				},
-				tx, &gasUsed, vm.Config{Tracer: tracer},
+				tx, &gasUsed, vm.Config{Tracer: tracer.Hooks},
 			)
 			require.NoError(t, err, "core.ApplyTransaction(...)")
 			require.Equalf(t, types.ReceiptStatusSuccessful, receipt.Status, "%T.Status", receipt)
@@ -486,7 +487,7 @@ func TestGasRefunds(t *testing.T) {
 
 			key, err := crypto.GenerateKey()
 			require.NoError(t, err, "crypto.GenerateKey()")
-			sdb.SetBalance(crypto.PubkeyToAddress(key.PublicKey), new(uint256.Int).SetAllOne())
+			sdb.SetBalance(crypto.PubkeyToAddress(key.PublicKey), new(uint256.Int).SetAllOne(), tracing.BalanceChangeUnspecified)
 
 			tx := types.MustSignNewTx(
 				key,

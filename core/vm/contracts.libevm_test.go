@@ -36,6 +36,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core"
+	"github.com/ethereum/go-ethereum/core/tracing"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -215,7 +216,7 @@ func TestNewStatefulPrecompile(t *testing.T) {
 		ethtest.WithChainConfig(&config),
 	)
 	state.SetState(precompile, slot, stateValue)
-	state.SetBalance(caller, new(uint256.Int).Not(uint256.NewInt(0)))
+	state.SetBalance(caller, new(uint256.Int).Not(uint256.NewInt(0)), tracing.BalanceChangeUnspecified)
 	evm.Origin = eoa
 
 	tests := []struct {
@@ -847,9 +848,13 @@ func TestPrecompileCallWithPrestateTracer(t *testing.T) {
 	const tracerName = "prestateTracer"
 	tracer, err := tracers.DefaultDirectory.New(tracerName, nil, nil)
 	require.NoErrorf(t, err, "tracers.DefaultDirectory.New(%q)", tracerName)
-	evm.Config.Tracer = tracer
+	evm.Config.Tracer = tracer.Hooks
 
-	_, _, err = evm.Call(vm.AccountRef(rng.Address()), precompile, []byte{}, 1e6, uint256.NewInt(0))
+	// The tracer is given the state database at the start of a transaction.
+	eoa := rng.Address()
+	tracer.OnTxStart(evm.GetVMContext(), types.NewTx(&types.LegacyTx{To: &precompile}), eoa)
+
+	_, _, err = evm.Call(vm.AccountRef(eoa), precompile, []byte{}, 1e6, uint256.NewInt(0))
 	require.NoError(t, err, "evm.Call([precompile that calls regular contract])")
 
 	gotJSON, err := tracer.GetResult()
@@ -967,10 +972,10 @@ func TestPrecompileCallGasWithCallTracer(t *testing.T) {
 			require.NoErrorf(t, err, "tracers.DefaultDirectory.New(%q)", tracerName)
 
 			sdb, evm := ethtest.NewZeroEVM(t, ethtest.WithBlockNumberAndChainConfig(1, config))
-			evm.Config.Tracer = tracer
+			evm.Config.Tracer = tracer.Hooks
 
-			sdb.SetBalance(precompile, new(uint256.Int).SetAllOne())
-			sdb.SetBalance(called, uint256.NewInt(1))
+			sdb.SetBalance(precompile, new(uint256.Int).SetAllOne(), tracing.BalanceChangeUnspecified)
+			sdb.SetBalance(called, uint256.NewInt(1), tracing.BalanceChangeUnspecified)
 			if tt.preWarmContractAddr {
 				sdb.AddAddressToAccessList(called)
 			}
@@ -1046,8 +1051,8 @@ func TestNotWarmCalledAddressOnPrecompileOutOfGas(t *testing.T) {
 	hooks.Register(t)
 
 	sdb, evm := ethtest.NewZeroEVM(t, ethtest.WithAllEIPs())
-	sdb.SetBalance(eoa, new(uint256.Int).SetAllOne())
-	sdb.SetBalance(precompile, new(uint256.Int).SetAllOne())
+	sdb.SetBalance(eoa, new(uint256.Int).SetAllOne(), tracing.BalanceChangeUnspecified)
+	sdb.SetBalance(precompile, new(uint256.Int).SetAllOne(), tracing.BalanceChangeUnspecified)
 
 	for gas := uint64(0); ; gas += 50 {
 		got, _, err := evm.Call(vm.AccountRef(eoa), precompile, nil, gas, uint256.NewInt(0))

@@ -17,12 +17,12 @@
 package ethtest
 
 import (
+	"log/slog"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/exp/slog"
 
 	"github.com/ethereum/go-ethereum/log"
 )

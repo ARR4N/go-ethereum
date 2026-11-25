@@ -18,8 +18,7 @@ package log
 
 import (
 	"fmt"
-
-	"golang.org/x/exp/slog"
+	"log/slog"
 )
 
 // A Lazy function defers its execution until logging is performed.

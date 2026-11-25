@@ -24,6 +24,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
+	"github.com/ethereum/go-ethereum/core/tracing"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/libevm"
 	"github.com/ethereum/go-ethereum/libevm/options"
@@ -38,9 +39,11 @@ type environment struct {
 	callType CallType
 }
 
-func (e *environment) Gas() uint64            { return e.self.Gas }
-func (e *environment) UseGas(gas uint64) bool { return e.self.UseGas(gas) }
-func (e *environment) Value() *uint256.Int    { return new(uint256.Int).Set(e.self.Value()) }
+func (e *environment) Gas() uint64 { return e.self.Gas }
+func (e *environment) UseGas(gas uint64) bool {
+	return e.self.UseGas(gas, e.evm.Config.Tracer, tracing.GasChangeIgnored)
+}
+func (e *environment) Value() *uint256.Int { return new(uint256.Int).Set(e.self.Value()) }
 
 func (e *environment) ChainConfig() *params.ChainConfig  { return e.evm.chainConfig }
 func (e *environment) Rules() params.Rules               { return e.evm.chainRules }
