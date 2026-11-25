@@ -41,7 +41,7 @@ type environment struct {
 
 func (e *environment) Gas() uint64 { return e.self.Gas }
 func (e *environment) UseGas(gas uint64) bool {
-	return e.self.UseGas(gas, e.evm.Config.Tracer, tracing.GasChangeIgnored)
+	return e.useGas(gas, tracing.GasChangeCallPrecompiledContract)
 }
 func (e *environment) Value() *uint256.Int { return new(uint256.Int).Set(e.self.Value()) }
 
@@ -54,10 +54,22 @@ func (e *environment) BlockTime() uint64                 { return e.evm.Context.
 
 func (e *environment) InvalidateExecution(err error) { e.evm.InvalidateExecution(err) }
 
+// useGas is the internal equivalent of [environment.UseGas], for gas that
+// isn't consumed by the precompile itself. The `reason` is reported to the
+// tracer.
+func (e *environment) useGas(gas uint64, reason tracing.GasChangeReason) bool {
+	return e.self.UseGas(gas, e.evm.Config.Tracer, reason)
+}
+
+// refundGas returns to the precompile the gas left over from an outbound
+// call, mirroring the reporting of the *CALL op codes.
 func (e *environment) refundGas(add uint64) error {
 	gas, overflow := math.SafeAdd(e.self.Gas, add)
 	if overflow {
 		return ErrGasUintOverflow
+	}
+	if t := e.evm.Config.Tracer; t != nil && t.OnGasChange != nil && add > 0 {
+		t.OnGasChange(e.self.Gas, gas, tracing.GasChangeCallLeftOverRefunded)
 	}
 	e.self.Gas = gas
 	return nil
@@ -143,7 +155,7 @@ func (e *environment) callContract(typ CallType, addr common.Address, input []by
 
 func (e *environment) buyCallGas(typ CallType, cfg *callConfig, addr common.Address, gas uint64, value *uint256.Int) (bought uint64, retErr error) {
 	if cfg.legacyOutboundCallGas {
-		if !e.UseGas(gas) {
+		if !e.useGas(gas, tracing.GasChangeCallOpCode) {
 			return 0, ErrOutOfGas
 		}
 		return gas, nil
@@ -169,7 +181,7 @@ func (e *environment) buyCallGas(typ CallType, cfg *callConfig, addr common.Addr
 	// Constant gas cost MUST be charged first otherwise the 63/64 rule of the
 	// dynamic cost will be applied to the incorrect value.
 	op := e.evm.interpreter.table[typ.OpCode()]
-	if !e.UseGas(op.constantGas) {
+	if !e.useGas(op.constantGas, tracing.GasChangeCallOpCode) {
 		return 0, ErrOutOfGas
 	}
 
@@ -191,7 +203,7 @@ func (e *environment) buyCallGas(typ CallType, cfg *callConfig, addr common.Addr
 	if err != nil {
 		return 0, err
 	}
-	if !e.UseGas(dyn) {
+	if !e.useGas(dyn, tracing.GasChangeCallOpCode) {
 		return 0, ErrOutOfGas
 	}
 

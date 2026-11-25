@@ -102,7 +102,9 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 // remaining gas.
 func (st *StateTransition) afterGasRefund(refunded uint64) {
 	if !st.rulesHooks().ShouldRefundGas() {
-		st.gasRemaining -= refunded
+		// Upstream has already reported the refund to the tracer so the
+		// reversal is reported with the same reason.
+		st.setGasRemaining(st.gasRemaining-refunded, tracing.GasChangeTxRefunds)
 	}
 
 	// This is placed after refund adjustment as refunds are set upstream in
@@ -121,10 +123,19 @@ func (st *StateTransition) afterGasRefund(refunded uint64) {
 		limit, // as documented in [params.RulesHooks]
 		st.rulesHooks().MinimumGasConsumption(limit),
 	)
-	st.gasRemaining = min(
-		st.gasRemaining,
-		limit-minConsume,
+	st.setGasRemaining(
+		min(st.gasRemaining, limit-minConsume),
+		tracing.GasChangeLibEVMMinimumConsumption,
 	)
+}
+
+// setGasRemaining updates the gas remaining, reporting any change to the
+// tracer.
+func (st *StateTransition) setGasRemaining(to uint64, reason tracing.GasChangeReason) {
+	if t := st.evm.Config.Tracer; t != nil && t.OnGasChange != nil && to != st.gasRemaining {
+		t.OnGasChange(st.gasRemaining, to, reason)
+	}
+	st.gasRemaining = to
 }
 
 // maybeCreditBaseFeeToCoinbase credits the coinbase with the base-fee portion
@@ -145,7 +156,7 @@ func (st *StateTransition) maybeCreditBaseFeeToCoinbase() {
 	}
 	fee := uint256.NewInt(st.gasUsed())
 	fee.Mul(fee, baseFee)
-	st.state.AddBalance(st.evm.Context.Coinbase, fee, tracing.BalanceChangeUnspecified)
+	st.state.AddBalance(st.evm.Context.Coinbase, fee, tracing.BalanceIncreaseRewardTransactionFee)
 }
 
 // libevmAccessListGas is a convenience wrapper for calling the

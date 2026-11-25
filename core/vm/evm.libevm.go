@@ -20,6 +20,7 @@ import (
 	"github.com/holiman/uint256"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/tracing"
 	"github.com/ethereum/go-ethereum/libevm"
 	"github.com/ethereum/go-ethereum/log"
 )
@@ -86,6 +87,9 @@ func (evm *EVM) spendPreprocessingGas(gas uint64) (uint64, error) {
 	}
 	if c > gas {
 		return 0, ErrOutOfGas
+	}
+	if t := evm.Config.Tracer; t != nil && t.OnGasChange != nil && c > 0 {
+		t.OnGasChange(gas, gas-c, tracing.GasChangeLibEVMPreprocessing)
 	}
 	return gas - c, nil
 }
