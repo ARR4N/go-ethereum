@@ -720,7 +720,9 @@ Receipt changes are under [core-8](#core-8).
   - `pendingLogs` (geth #29574, pending-log support removed). The libevm
     subtest `TestBloomOverride/pendingLogs` was deleted with it. Maintainer's
     rationale: pending logs do not make sense in SAE, so nothing is lost.
-  - `lightFilterLogs` (light-client mode removed).
+  - `lightFilterLogs` (light-client mode removed). The libevm subtest
+    `TestBloomOverride/lightFilterLogs` was deleted as obsolete, because
+    upstream removed the feature.
 
 ---
 
