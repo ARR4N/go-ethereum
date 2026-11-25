@@ -19,6 +19,7 @@ package rawdb_test
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"sort"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -45,7 +46,17 @@ func ExampleDatabaseStat() {
 }
 
 func ExampleInspectDatabase() {
+	// [rawdb.InspectDatabase] looks for a state freezer in the ancients
+	// directory, skipping it if there isn't one.
+	ancients, err := os.MkdirTemp("", "ancients")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(ancients)
+
 	db := &stubDatabase{
+		ancientDir: ancients,
 		iterator: &stubIterator{
 			kvs: []keyValue{
 				// Bloom bits total = 5 + 1 = 6
@@ -95,7 +106,7 @@ func ExampleInspectDatabase() {
 		}),
 	}
 
-	err := rawdb.InspectDatabase(db, keyPrefix, keyStart, options...)
+	err = rawdb.InspectDatabase(db, keyPrefix, keyStart, options...)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -137,7 +148,8 @@ func ExampleInspectDatabase() {
 
 type stubDatabase struct {
 	ethdb.Database
-	iterator ethdb.Iterator
+	iterator   ethdb.Iterator
+	ancientDir string
 }
 
 func (s *stubDatabase) NewIterator(keyPrefix, keyStart []byte) ethdb.Iterator {
@@ -155,6 +167,11 @@ func (s *stubDatabase) Ancients() (uint64, error) {
 
 func (s *stubDatabase) Tail() (uint64, error) {
 	return 0, nil
+}
+
+// AncientDatadir is used in [InspectDatabase] to locate the state freezer.
+func (s *stubDatabase) AncientDatadir() (string, error) {
+	return s.ancientDir, nil
 }
 
 func (s *stubDatabase) Get(key []byte) ([]byte, error) {

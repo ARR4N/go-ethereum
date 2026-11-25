@@ -262,8 +262,6 @@ func TestBlockWithX(t *testing.T) {
 				newBlock = block.WithBody(body)
 			case "WithSeal":
 				newBlock = block.WithSeal(&Header{})
-			case "WithWithdrawals":
-				newBlock = block.WithWithdrawals(nil)
 			default:
 				t.Fatalf("method call not implemented: %s", method)
 			}
@@ -402,8 +400,7 @@ func referenceBlockBytes(headerBytes, bodyBytes rlp.RawValue) (rlp.RawValue, err
 		return nil, err
 	}
 	block := NewBlockWithHeader(header).
-		WithBody(*body).
-		WithWithdrawals(body.Withdrawals)
+		WithBody(*body)
 	return rlp.EncodeToBytes(block)
 }
 

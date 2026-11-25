@@ -191,7 +191,12 @@ func (ec *Client) getBlock(ctx context.Context, method string, args ...interface
 		}
 		txs[i] = tx.tx
 	}
-	block := types.NewBlockWithHeader(head).WithBody(txs, uncles).WithWithdrawals(body.Withdrawals)
+	block := types.NewBlockWithHeader(head).WithBody(
+		types.Body{
+			Transactions: txs,
+			Uncles:       uncles,
+			Withdrawals:  body.Withdrawals,
+		})
 	if err := block.PostRPCUnmarshal(raw); err != nil { //libevm
 		return nil, err
 	}

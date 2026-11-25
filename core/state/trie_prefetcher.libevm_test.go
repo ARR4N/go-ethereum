@@ -68,7 +68,7 @@ func TestStopPrefetcherWaitsOnWorkers(t *testing.T) {
 
 		db := filledStateDB()
 		db.prefetcher = newTriePrefetcher(db.db, db.originalRoot, "", opt)
-		db.prefetcher.prefetch(common.Hash{}, common.Hash{}, common.Address{}, [][]byte{{}})
+		require.NoError(t, db.prefetcher.prefetch(common.Hash{}, common.Hash{}, common.Address{}, [][]byte{{}}), "prefetch()")
 
 		// The worker is now inside Execute(), blocked on pool.unblock.
 		<-pool.executed
@@ -128,7 +128,7 @@ func TestWorkerPoolSharedAcrossTries(t *testing.T) {
 				owner := common.BytesToHash([]byte{byte(i)})
 				addr := common.BytesToAddress([]byte{byte(i)})
 				keys := [][]byte{common.HexToHash("0xdead").Bytes()}
-				prefetcher.prefetch(owner, db.originalRoot, addr, keys)
+				require.NoErrorf(t, prefetcher.prefetch(owner, db.originalRoot, addr, keys), "prefetch() for subfetcher %d", i)
 			}
 			require.Len(t, prefetcher.fetchers, numFetchers, "each call to prefetch() should have created a new subfetcher")
 			for id, f := range prefetcher.fetchers {
@@ -136,7 +136,7 @@ func TestWorkerPoolSharedAcrossTries(t *testing.T) {
 			}
 			assert.Equal(t, 1, ctorCalls, "pool-constructor should not be called more than once")
 
-			prefetcher.close()
+			prefetcher.terminate(false /*async*/)
 			assert.Equal(t, 1, pool.dones, "should have called Done() once after close()")
 		})
 	}

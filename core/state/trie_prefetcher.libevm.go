@@ -94,12 +94,29 @@ func (sf *subfetcher) initPool(opts ...subfetcherPoolOption) {
 }
 
 // releaseWorkerPool calls Done() on the shared [WorkerPool] if one was
-// provided with [WithWorkerPool]. This MUST only be called after
-// [subfetcher.abort] returns on ALL fetchers to guarantee that no further calls
-// will be made to Execute() after calling Done().
-func (p *triePrefetcher) releaseWorkerPool() {
-	if w := p.workers; w != nil {
+// provided with [WithWorkerPool]. Done() is only called once ALL fetchers have
+// finished, to guarantee that no further calls will be made to Execute()
+// afterwards. If `async` is true, this method returns immediately and the
+// waiting is performed in a new goroutine; otherwise it blocks.
+//
+// It MUST be called after [subfetcher.terminate] has been called on all
+// fetchers, with the same value for `async`. This mirrors the behaviour of
+// [triePrefetcher.terminate], which may itself be asynchronous.
+func (p *triePrefetcher) releaseWorkerPool(async bool) {
+	w := p.workers
+	if w == nil {
+		return
+	}
+	release := func() {
+		for _, f := range p.fetchers {
+			f.wait()
+		}
 		w.Done()
+	}
+	if async {
+		go release()
+	} else {
+		release()
 	}
 }
 

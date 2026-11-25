@@ -270,7 +270,7 @@ func TestProcessor(t *testing.T) {
 			}
 
 			extra := []byte("extra")
-			block := types.NewBlock(&types.Header{Extra: extra}, txs, nil, nil, trie.NewStackTrie(nil))
+			block := types.NewBlock(&types.Header{Extra: extra}, &types.Body{Transactions: txs}, nil, trie.NewStackTrie(nil))
 			require.NoError(t, p.StartBlock(sdb, rules, block), "StartBlock()")
 
 			var wantPerTx []TxResult[recorded]
@@ -455,7 +455,7 @@ func TestIntegration(t *testing.T) {
 		wantReceipts = append(wantReceipts, wantR)
 	}
 
-	block := types.NewBlock(header, txs, nil, nil, trie.NewStackTrie(nil))
+	block := types.NewBlock(header, &types.Body{Transactions: txs}, nil, trie.NewStackTrie(nil))
 	require.NoError(t, sut.StartBlock(state, rules, block), "StartBlock()")
 
 	pool := core.GasPool(math.MaxUint64)
@@ -523,8 +523,8 @@ func TestTotalCost(t *testing.T) {
 	})
 	b := types.NewBlock(
 		&types.Header{Number: big.NewInt(0)},
-		types.Transactions{tx},
-		nil, nil,
+		&types.Body{Transactions: types.Transactions{tx}},
+		nil,
 		trie.NewStackTrie(nil),
 	)
 	rules := params.MergedTestChainConfig.Rules(big.NewInt(0), true, 0)

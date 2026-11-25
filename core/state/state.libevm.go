@@ -63,3 +63,15 @@ func (e extraChange[SA]) dirtied() *common.Address { return e.account }
 func (e extraChange[SA]) revert(s *StateDB) {
 	e.accessor.Set(&s.getStateObject(*e.account).data, e.prev)
 }
+
+// copy returns a copy of the journal entry.
+//
+// TODO(arr4n): the copy is shallow in `prev`, so if SA is, or contains, a
+// pointer then the previous payload is shared between a [StateDB] and its
+// copies. This is a known limitation, deferred because the only payload in
+// production is a bool. It MUST be addressed together with the other changes
+// in the `arr4n/clonable-state-account-extras` branch, which introduces an
+// explicit cloning method for payloads.
+func (e extraChange[SA]) copy() journalEntry {
+	return e
+}
