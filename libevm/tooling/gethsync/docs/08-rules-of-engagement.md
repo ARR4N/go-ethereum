@@ -163,6 +163,14 @@ until the report can be complete.
   previous report. Pulling that branch makes every link open in an IDE. No
   separate download is wanted.
 - The report commit is never part of `gethsync`.
+- **A difference from a reference merge is never informational.** Where the
+  result differs from the maintainer's own earlier merge (the post hoc oracle;
+  see [05](05-process.md)), in either direction, the difference is a deliberate
+  choice by one party that the other did not make. Each one is its own item,
+  as a *decision* (default) or an *alert* (only if an existing rule or an
+  earlier answer already settles it, which the item must cite). Each states
+  what the reference did, what this sync did, why, and what follows from
+  either choice. They are never grouped under one item or summarised.
 
 In conversation, say only that the report is ready, where it is, and how many
 decisions it contains.
