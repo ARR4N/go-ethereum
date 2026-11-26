@@ -86,7 +86,7 @@ func (p *triePrefetcher) terminate(async bool) {
 		return
 	default:
 	}
-	// Termiante all sub-fetchers, sync or async, depending on the request
+	// Terminate all sub-fetchers, sync or async, depending on the request
 	for _, fetcher := range p.fetchers {
 		fetcher.terminate(async)
 	}

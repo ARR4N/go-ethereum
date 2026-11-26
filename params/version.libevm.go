@@ -48,7 +48,7 @@ const (
 // triplet.
 //
 // [semver v2]: https://semver.org/
-const LibEVMVersion = "1.14.4-0.4.0.beta"
+const LibEVMVersion = "1.14.5-0.4.0.beta"
 
 // A ReleaseType is a suffix for [LibEVMVersion].
 type ReleaseType string
