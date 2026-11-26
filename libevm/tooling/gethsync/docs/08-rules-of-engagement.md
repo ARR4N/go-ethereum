@@ -64,6 +64,18 @@ A lint, vet or compiler finding is fixed at its cause, never suppressed.
 This rule exists because of a mistake in group 2 of the first sync; see
 [11](11-sync-log.md).
 
+## Assertion messages name the receiver's type
+
+In libevm tests, the message of an assertion on a method call qualifies the
+method with its receiver's type, using `%T`, as the existing tests do:
+
+```go
+require.NoErrorf(t, err, "%T.prefetch()", prefetcher)
+```
+
+not a bare `"prefetch()"`. A message must identify what failed without the
+reader opening the test.
+
 ## Novel work must be identifiable
 
 A sync adapts existing code; it should rarely add behaviour. When it does, on
