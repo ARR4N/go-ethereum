@@ -51,6 +51,19 @@ Flag without necessarily stopping:
 
 - A **new flaky test**, i.e. one not in a package already in `FLAKY_REGEX`.
 
+## Never silence a finding
+
+A lint, vet or compiler finding is fixed at its cause, never suppressed.
+
+- An error that a call newly returns is **checked** (`require.NoError` in a
+  test), not discarded with `_ =` and not hidden with a `nolint` directive.
+- If the proper fix seems to conflict with another rule here, for example it
+  adds an assertion to a libevm test, that is a reason to **ask**, not to pick
+  whichever option avoids the question.
+
+This rule exists because of a mistake in group 2 of the first sync; see
+[11](11-sync-log.md).
+
 ## Novel work must be identifiable
 
 A sync adapts existing code; it should rarely add behaviour. When it does, on

@@ -170,3 +170,9 @@ and the merge commit message for the full list.
   upstream's committed output can differ.
 - `git show --remerge-diff --stat <merge>` is a reliable way to list every
   file a merge commit touched by hand.
+- **Mistake, corrected:** upstream's `prefetch` began returning an error, and
+  the linter flagged two libevm test calls that ignored it. They were first
+  "fixed" by discarding the error with `_ =`, on the reasoning that adding an
+  assertion would be a semantic change to a libevm test. The maintainer
+  rejected that outright. Both now use `require.NoError`. Discarding an error
+  is the worse semantic change, and doubt about a rule is a reason to ask.
