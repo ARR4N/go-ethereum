@@ -41,21 +41,28 @@ type WorkerPool interface {
 // WithWorkerPool configures trie prefetching to execute asynchronously. The
 // provided constructor is called once per trie prefetcher (i.e. typically once
 // per block). Done() is called on the pool once when the prefetcher is closed.
+//
+// The option is ignored, and prefetching is therefore synchronous, if the
+// prefetcher is started with a non-nil stateless witness.
 func WithWorkerPool(ctor func() WorkerPool) PrefetcherOption {
 	return options.Func[prefetcherConfig](func(c *prefetcherConfig) {
 		c.newWorkerPool = ctor
 	})
 }
 
-// newWorkerPool returns a new [WorkerPool] if provided a [WithWorkerPool].
-// Otherwise, it returns nil.
+// newWorkerPool returns a new [WorkerPool] if provided a [WithWorkerPool] and
+// not `witnessing`. Otherwise, it returns nil.
+//
+// A [WorkerPool] reads through copies of each subfetcher's Trie, which cannot
+// contribute to a stateless witness as that is collected from the subfetcher's
+// own Trie. Correctness of the witness takes precedence over concurrency.
 //
 // The pool should be shared by all of the prefetcher's subfetchers and MUST NOT
 // be propagated to copies made with [triePrefetcher.copy]. A copy MAY be closed
 // while the original is still fetching.
-func newWorkerPool(opts ...PrefetcherOption) WorkerPool {
+func newWorkerPool(witnessing bool, opts ...PrefetcherOption) WorkerPool {
 	c := options.As(opts...)
-	if c.newWorkerPool == nil {
+	if c.newWorkerPool == nil || witnessing {
 		return nil
 	}
 	return c.newWorkerPool()
@@ -63,6 +70,7 @@ func newWorkerPool(opts ...PrefetcherOption) WorkerPool {
 
 type subfetcherPool struct {
 	workers WorkerPool
+	own     func() Trie // the subfetcher's own Trie; used i.f.f. `workers` is nil
 	tries   sync.Pool[Trie]
 	wg      sync.WaitGroup
 }
@@ -82,6 +90,7 @@ func withWorkerPool(workers WorkerPool) subfetcherPoolOption {
 // initPool initialises the [subfetcher]'s pool, applying the provided options.
 func (sf *subfetcher) initPool(opts ...subfetcherPoolOption) {
 	sf.pool = &subfetcherPool{
+		own: func() Trie { return sf.trie },
 		tries: sync.Pool[Trie]{
 			// Although the workers are shared between all subfetchers, each
 			// MUST have its own Trie pool.
@@ -124,24 +133,24 @@ func (p *subfetcherPool) wait() {
 	p.wg.Wait()
 }
 
-// execute runs the provided function with a copy of the subfetcher's Trie.
-// Copies are stored in a [sync.Pool] to reduce creation overhead. If p was
-// configured with a [WorkerPool] then it is used for function execution,
-// otherwise `fn` is just called directly.
+// execute runs the provided function with a Trie. If p was configured with a
+// [WorkerPool] then it is used for function execution, with a copy of the
+// subfetcher's Trie. Copies are stored in a [sync.Pool] to reduce creation
+// overhead. Otherwise `fn` is called directly, with the subfetcher's own Trie,
+// which is identical to the behaviour of unmodified geth.
 func (p *subfetcherPool) execute(fn func(Trie)) {
+	if p.workers == nil {
+		fn(p.own())
+		return
+	}
+
 	p.wg.Add(1)
-	do := func() {
+	p.workers.Execute(func() {
 		t := p.tries.Get()
 		fn(t)
 		p.tries.Put(t)
 		p.wg.Done()
-	}
-
-	if w := p.workers; w != nil {
-		w.Execute(do)
-	} else {
-		do()
-	}
+	})
 }
 
 // GetAccount optimistically pre-fetches an account, dropping the returned value

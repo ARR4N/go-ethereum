@@ -67,8 +67,8 @@ func TestStopPrefetcherWaitsOnWorkers(t *testing.T) {
 		opt := WithWorkerPool(func() WorkerPool { return pool })
 
 		db := filledStateDB()
-		db.prefetcher = newTriePrefetcher(db.db, db.originalRoot, "", opt)
-		require.NoError(t, db.prefetcher.prefetch(common.Hash{}, common.Hash{}, common.Address{}, [][]byte{{}}), "prefetch()")
+		db.prefetcher = newTriePrefetcher(db.db, db.originalRoot, "", true /*noreads*/, opt)
+		require.NoError(t, db.prefetcher.prefetch(common.Hash{}, common.Hash{}, common.Address{}, [][]byte{{}}, false /*read*/), "prefetch()")
 
 		// The worker is now inside Execute(), blocked on pool.unblock.
 		<-pool.executed
@@ -121,14 +121,14 @@ func TestWorkerPoolSharedAcrossTries(t *testing.T) {
 			})
 
 			db := filledStateDB()
-			prefetcher := newTriePrefetcher(db.db, db.originalRoot, "", opt)
+			prefetcher := newTriePrefetcher(db.db, db.originalRoot, "", true /*noreads*/, opt)
 			require.Equal(t, 1, ctorCalls, "pool-constructor should have been called in newTriePrefetcher()")
 
 			for i := range numFetchers {
 				owner := common.BytesToHash([]byte{byte(i)})
 				addr := common.BytesToAddress([]byte{byte(i)})
 				keys := [][]byte{common.HexToHash("0xdead").Bytes()}
-				require.NoErrorf(t, prefetcher.prefetch(owner, db.originalRoot, addr, keys), "prefetch() for subfetcher %d", i)
+				require.NoErrorf(t, prefetcher.prefetch(owner, db.originalRoot, addr, keys, false /*read*/), "prefetch() for subfetcher %d", i)
 			}
 			require.Len(t, prefetcher.fetchers, numFetchers, "each call to prefetch() should have created a new subfetcher")
 			for id, f := range prefetcher.fetchers {
