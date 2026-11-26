@@ -64,17 +64,29 @@ A lint, vet or compiler finding is fixed at its cause, never suppressed.
 This rule exists because of a mistake in group 2 of the first sync; see
 [11](11-sync-log.md).
 
-## Assertion messages name the receiver's type
+## Test failures must be useful
 
-In libevm tests, the message of an assertion on a method call qualifies the
-method with its receiver's type, using `%T`, as the existing tests do:
+libevm and SAE follow the Go Style Decisions
+(https://google.github.io/styleguide/go/decisions.html), in particular its
+section on useful test failures. For any test written or edited in a sync:
 
-```go
-require.NoErrorf(t, err, "%T.prefetch()", prefetcher)
-```
+- **Identify the function.** A failure message names what was called,
+  qualifying a method with its receiver's type via `%T`:
 
-not a bare `"prefetch()"`. A message must identify what failed without the
-reader opening the test.
+  ```go
+  if err := prefetcher.prefetch(owner, root, addr, keys, false); err != nil {
+  	t.Fatalf("%T.prefetch() error %v", prefetcher, err)
+  }
+  ```
+
+  not a bare `"prefetch()"`.
+- **Identify the input where it helps.** Inputs are not always easy to
+  communicate or relevant; include them when they are.
+- **`t.Error` and friends are welcome.** The maintainer often uses them
+  directly because `testify` is unnecessarily verbose. Follow the style of the
+  file being edited; do not convert between the two.
+
+A failure must tell the reader what went wrong without opening the test.
 
 ## Novel work must be identifiable
 
