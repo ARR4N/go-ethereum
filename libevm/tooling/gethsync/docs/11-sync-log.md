@@ -176,3 +176,29 @@ and the merge commit message for the full list.
   assertion would be a semantic change to a libevm test. The maintainer
   rejected that outright. Both now use `require.NoError`. Discarding an error
   is the worse semantic change, and doubt about a rule is a reason to ask.
+
+## Group 3: v1.14.4 → v1.14.5
+
+Upstream side: tag `v1.14.5` (`0dd173a72`, on `master`), 9 commits. No reverts
+needed, no conflicts. The only hand edit is `LibEVMVersion`.
+
+### Comparison with the old branch at v1.14.5 (post hoc)
+
+Differences not explained by `main` having moved on since the old branch point:
+
+| File | Old branch | This sync | Outcome |
+|---|---|---|---|
+| `core/vm/contracts.go`, `eth/tracers/native/prestate.go` | — | — | Order of declarations and a comment only |
+| `core/state/statedb.go` | Commit options also passed to the internal `commit()`, unused there | Stop at `commitAndFlush` | Equivalent |
+| `core/state/state.libevm.go` | Journal entry deep-copied via a `SelfCloner` constraint on `state.SetExtra` | Shallow, with a TODO | Maintainer chose shallow for the sync; see below |
+| `libevm/legacy` | `PrecompileEnvironment.UseGas` gains tracer and reason parameters | Exported signature unchanged | Maintainer prefers this sync's |
+| `log/value.libevm.go` | Still `golang.org/x/exp/slog` | `log/slog` | Maintainer prefers this sync's. The old one implements the wrong package's `LogValuer` for upstream's logger |
+| `core/rawdb/examples.libevm_test.go` | Stub returns `""`, read by upstream as an in-memory freezer; expected output gains five state-freezer rows | Temporary directory; output unchanged | Maintainer is content with the temporary directory |
+
+On cloning account payloads: the old branch's constraint was on
+`state.SetExtra` only, which breaks that exported function for payload types
+without a `Clone` method (the production payload is a `bool`) while
+`StateAccount.Copy` stays shallow. The paused branch
+`arr4n/clonable-state-account-extras` instead constrains
+`types.RegisterExtras`, which lets both sites clone. Either is a breaking
+change to libevm's API and is not part of the sync.
