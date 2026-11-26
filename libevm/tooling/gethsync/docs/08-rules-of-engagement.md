@@ -160,8 +160,8 @@ until the report can be complete.
 - **Delivered as a file, not as text to copy.** Publish it with
   `tools/publish-report.sh`, which puts it at the root of `gethsync-blocked`
   as `GETHSYNC_REPORT.md`, on top of the commit it describes, overwriting the
-  previous report. Pulling that branch makes every link open in an IDE. Also
-  attach the file for download where the medium allows.
+  previous report. Pulling that branch makes every link open in an IDE. No
+  separate download is wanted.
 - The report commit is never part of `gethsync`.
 
 In conversation, say only that the report is ready, where it is, and how many
