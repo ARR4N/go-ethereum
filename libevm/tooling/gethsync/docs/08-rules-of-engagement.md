@@ -143,6 +143,30 @@ merge commit, whose message says the resolution was the maintainer's decision.
 Conflict markers are always diff3 style; see
 [05](05-process.md#diff3).
 
+## How to report
+
+Every status report to the maintainer SHOULD take this form. No stream of
+consciousness, and no partial reports while work is still in flight: wait
+until the report can be complete.
+
+- **One numbered list, in priority order.**
+- **Ranges labelled by kind**, stated up front: which items are *decisions*
+  (an answer is needed, and they block), which are *alerts* (done under
+  existing rules; speak up only to disagree) and which are *informational*.
+- **Markdown.**
+- **Every reference to code is a link relative to the repository root, with
+  line numbers**: `[core/state/statedb.go:211](core/state/statedb.go#L211)`,
+  or a range `#L211-L223`. State which commit the line numbers refer to.
+- **Delivered as a file, not as text to copy.** Publish it with
+  `tools/publish-report.sh`, which puts it at the root of `gethsync-blocked`
+  as `GETHSYNC_REPORT.md`, on top of the commit it describes, overwriting the
+  previous report. Pulling that branch makes every link open in an IDE. Also
+  attach the file for download where the medium allows.
+- The report commit is never part of `gethsync`.
+
+In conversation, say only that the report is ready, where it is, and how many
+decisions it contains.
+
 ## Report, don't hide
 
 - Any rewind or redo of history: say what changed and why, before replacing
