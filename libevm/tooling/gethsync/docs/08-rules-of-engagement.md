@@ -83,8 +83,21 @@ section on useful test failures. For any test written or edited in a sync:
 - **Identify the input where it helps.** Inputs are not always easy to
   communicate or relevant; include them when they are.
 - **`t.Error` and friends are welcome.** The maintainer often uses them
-  directly because `testify` is unnecessarily verbose. Follow the style of the
-  file being edited; do not convert between the two.
+  directly because `testify` is unnecessarily verbose. They are typically
+  coupled with a diff, reported only when non-empty: `cmp.Diff()` for values
+  and `testerr.Diff()` for errors.
+
+  ```go
+  if diff := cmp.Diff(want, got); diff != "" {
+  	t.Errorf("%T.Foo() diff (-want +got):\n%s", x, diff)
+  }
+  if diff := testerr.Diff(err, tt.wantErr); diff != "" {
+  	t.Fatalf("%T.Foo() %s", x, diff)
+  }
+  ```
+
+  Copy the exact message form from a neighbouring test. Follow the style of
+  the file being edited; do not convert between the two.
 
 A failure must tell the reader what went wrong without opening the test.
 
