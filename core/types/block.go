@@ -241,6 +241,11 @@ func NewBlock(header *Header, body *Body, receipts []*Receipt, hasher TrieHasher
 		uncles      = body.Uncles
 		withdrawals = body.Withdrawals
 	)
+	//libevm:start
+	// Performed immediately as a defensive mechanism against potential
+	// future refactors that return early.
+	b.extra = body.cloneExtra()
+	//libevm:end
 
 	if len(txs) == 0 {
 		b.header.TxHash = EmptyTxsHash
