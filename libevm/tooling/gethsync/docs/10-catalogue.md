@@ -276,6 +276,19 @@ Names used under "Steps".
   `*state.StateDB` must satisfy and that declares one of the three widened
   methods needs the same treatment.
 
+<a id="tracing-2"></a>
+
+### tracing-2: `go run` in the stringer directive (geth v1.14.4 and v1.14.5 only)
+
+- **Where:** `core/tracing/hooks.go`.
+- **Change:** `//go:generate stringer …` →
+  `//go:generate go run golang.org/x/tools/cmd/stringer …`, and the generated
+  `gen_balance_change_reason_stringer.go` regenerated (see [vet-1](#vet-1) for
+  why its output differs).
+- **Rationale:** libevm's CI has no `stringer` on its PATH. The line is
+  upstream's own from v1.14.6 (geth #30037), so the change disappears there.
+  Maintainer's decision.
+
 libevm's own gas and balance adjustments are reported to these hooks with the
 reasons listed in [11](11-sync-log.md#tracer-reasons); two libevm-specific
 reason constants are in `core/tracing/hooks.libevm.go`.
@@ -389,6 +402,10 @@ reason constants are in `core/tracing/hooks.libevm.go`.
   snapshot and trie-database backends ([snapshot-1](#snapshot-1),
   [triedb-2](#triedb-2)).
 - **Steps:** variadic option; append the extracted options to the two calls.
+- **Since geth v1.14.4:** upstream split `Commit` into `commit` (no options)
+  and `commitAndFlush`. The options are on the exported `Commit`, passed to
+  `commitAndFlush(block, deleteEmptyObjects, opts...)`, which makes the same
+  two calls.
 
 <a id="state-6"></a>
 
@@ -416,6 +433,15 @@ reason constants are in `core/tracing/hooks.libevm.go`.
   signalling termination.
 - **Steps:** variadic option threaded through three signatures; two payload
   fields; receiver swap on the two trie reads; wrap the deferred close.
+- **Since geth v1.14.4** (upstream's prefetcher rewrite, geth #29519):
+  - `close()` no longer exists. The release is in `terminate(async)`:
+    `p.releaseWorkerPool(async)` after the loop terminating the sub-fetchers
+    and before `close(p.term)`.
+  - Termination may be asynchronous, so `releaseWorkerPool` calls
+    `WorkerPool.Done()` only once every sub-fetcher has finished, in a
+    goroutine when `async`. Approved by the maintainer because it mirrors
+    upstream's mechanism.
+  - The receiver swap is on upstream's simplified task loop.
 
 <a id="state-7"></a>
 
@@ -432,6 +458,8 @@ reason constants are in `core/tracing/hooks.libevm.go`.
   includes geth #29519**, then re-apply only [state-6](#state-6).
 - **Not in tracker #128**; it is a partial pre-emption that cannot be reverted
   as a commit.
+- **Deleted at geth v1.14.4**, which contains geth #29519. Nothing of this
+  entry remains.
 
 ---
 
@@ -520,6 +548,15 @@ so they are re-seated when the upstream twin arrives.
 - **Dependency:** the `WithBody` entry needs the `Body`-taking signature, which
   libevm pre-empted in #110 and upstream introduces as geth #29482. Before that
   version is merged there is no `body` value in scope.
+- **Since geth v1.14.4:**
+  - upstream's own `WithBody(Body)` replaced #110; the entry is one line in
+    its literal.
+  - `WithWithdrawals` no longer exists (a `Body` carries withdrawals).
+  - `NewBlock` now takes a `*Body`, so it clones the payload too:
+    `b.extra = body.cloneExtra()` in a `//libevm:start` … `//libevm:end` block
+    immediately after the opening `var (…)` declaration, placed first as a
+    defence against future refactors that return early. `NewBlock` documents
+    that its input is copied. Specified by the maintainer.
 - **At a merge:** every new upstream literal or copy of `Header`, `Body`,
   `Block` or `extblock` must carry `extra`. This is the commonest way for the
   transform to be lost silently.
@@ -822,6 +859,8 @@ interface of [state-4](#state-4); see the upstream test baseline in
 - **Rationale:** counterpart of [ethapi-3](#ethapi-3); lets body hooks restore
   payload fields from the raw RPC JSON.
 - **Steps:** split the return; one hook call between.
+- **Since geth v1.14.4:** upstream's call is `WithBody(types.Body{…})` with
+  withdrawals in the body; the split is unchanged.
 
 ---
 

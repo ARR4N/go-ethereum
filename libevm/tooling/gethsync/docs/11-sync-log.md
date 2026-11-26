@@ -124,3 +124,49 @@ at v1.14.0.
 - libevm tests can fail because of upstream bugs that upstream's own tests do
   not exercise.
 - CI gates need libevm naming; the oracles do not.
+
+## Group 2: v1.14.0 → v1.14.4
+
+Upstream side: tag `v1.14.4` (`5550d8399`, on `master`), 122 commits. v1.14.2
+and v1.14.3 were not merged separately; the upstream bug that left group 1
+partly red is only fixed in v1.14.4.
+
+### Reverts before the merge
+
+Done in geth naming.
+
+| Item | Result |
+|---|---|
+| #29644 (fee-history query limit) | Did not apply mechanically, because its line had been adapted in group 1. File restored to upstream's v1.14.0 contents |
+| #29514 (ConfigCompatError) | One conflict on an import line next to the reverted one (libevm naming vs geth naming); resolved by removing the import |
+| #110 (`WithBody(Body)`) | Hand-resolved in `ethclient.go`; two files already removed upstream; `beacon/types/exec_payload.go` restored to upstream's v1.14.0 contents. The tree does not build between this commit and the merge |
+
+### The merge
+
+12 conflicts. The substantial ones were upstream rewrites under libevm hooks:
+the trie prefetcher (state-6, state-7), `StateDB.Commit` (state-5) and
+`Block.WithBody` (types-1). See the catalogue entries for the re-seated forms
+and the merge commit message for the full list.
+
+### Maintainer decisions
+
+| Question | Decision |
+|---|---|
+| When to release the worker pool now that prefetcher termination can be asynchronous | After every sub-fetcher finishes, in a goroutine when asynchronous. Approved because it mirrors upstream's new mechanism |
+| Deep or shallow `copy()` on libevm's journal entry | Shallow for now. A known limitation, deferred because the only `StateAccountExtra` in production is a `bool`. To be addressed with the rest of the paused work on branch `arr4n/clonable-state-account-extras`; a TODO in the code says so |
+| Should `NewBlock` carry the body's payload? | It MUST be cloned, to match `NewBlock`'s documented "the input data is copied". Done as a follow-up commit; test in `*.libevm_claude_test.go` |
+| `stringer` is not on CI's PATH | Use `go run` in the directive, matching upstream's later line |
+
+### Findings
+
+- Upstream fixed its own v1.14.0 bug here, so
+  `TestOverrideBlockHash_StandardTraceBlockToFile` passes again.
+- A revert in geth naming can conflict on import lines adjacent to the
+  reverted change, and on lines adapted in an earlier group. Both are easy to
+  resolve by aiming for upstream's contents at the previous checkpoint.
+- Upstream's freezer inspection creates a directory at whatever path it is
+  given; test stubs must hand it a temporary one.
+- Generated files must be regenerated with the tool version in `go.mod`;
+  upstream's committed output can differ.
+- `git show --remerge-diff --stat <merge>` is a reliable way to list every
+  file a merge commit touched by hand.
