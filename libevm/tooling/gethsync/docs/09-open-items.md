@@ -52,6 +52,15 @@ beyond the repository and its GitHub artefacts. Before it lands on `main`:
 
 ## Back burner (remind the maintainer when wrapping up)
 
+- **Deep-copy account payloads (follow-up to the sync).** libevm's journal
+  entry for `state.SetExtra` has a shallow `copy()` (TODO in
+  `core/state/state.libevm.go`), as does `StateAccount.Copy()`'s payload clone
+  in `core/types`. Harmless while the only production payload is a `bool`.
+  Fix both together in a follow-up commit, using the maintainer's abandoned
+  branch `arr4n/clonable-state-account-extras` as the template: it constrains
+  `types.RegisterExtras`'s payload type to have a `Clone()` method. See
+  [11](11-sync-log.md), groups 2 and 3.
+
 - **The rename leaves `libevm/tooling` unbuildable in geth naming.** Its `.go`
   files are renamed but its `go.mod` is not. Either make the `find` exclusion
   in `rename-module.yml` effective or rename the tooling `go.mod` too. Left

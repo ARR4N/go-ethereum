@@ -202,3 +202,8 @@ without a `Clone` method (the production payload is a `bool`) while
 `arr4n/clonable-state-account-extras` instead constrains
 `types.RegisterExtras`, which lets both sites clone. Either is a breaking
 change to libevm's API and is not part of the sync.
+
+**Follow-up owed:** deep-copying account payloads, tracked on the back burner
+in [09](09-open-items.md). The maintainer's ruling: keep the TODO during the
+sync, then bring the change in as a follow-up commit using
+`arr4n/clonable-state-account-extras` as the template.
